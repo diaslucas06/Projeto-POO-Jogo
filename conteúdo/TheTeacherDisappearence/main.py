@@ -6,7 +6,7 @@ import os
 pygame.init()
 
 LARGURA = 900
-ALTURA = 450
+ALTURA = 500
 
 todas_as_andar = pygame.sprite.Group()
 player = Player()
@@ -21,6 +21,7 @@ relogio = pygame.time.Clock()
 while True:
     relogio.tick(30)
     tela.blit(fundo, (0,0))
+
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -28,6 +29,7 @@ while True:
         if event.type == KEYDOWN:
             player.andando()
             
+    teclas = pygame.key.get_pressed()
     todas_as_andar.draw(tela)
-    todas_as_andar.update()
+    todas_as_andar.update(teclas)
     pygame.display.flip()
