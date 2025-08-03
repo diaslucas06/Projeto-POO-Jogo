@@ -1,4 +1,5 @@
 import pygame
+import os
 import sys
 
 SCREEN_WIDTH = 1280
@@ -38,6 +39,8 @@ class Button:
 class Menu:
     def __init__(self, screen):
         self.screen = screen
+        self.fundo = pygame.image.load(os.path.join(os.path.dirname(__file__),"..", "data", "images", "corredores", f"CorredorA36.png"))
+        self.fundo = pygame.transform.scale(self.fundo, (1280, 720))
     
         mid_x = SCREEN_WIDTH // 2
         start_y = SCREEN_HEIGHT // 2 - 50
@@ -72,13 +75,12 @@ class Menu:
                     for btn in self.buttons:
                         btn.check_click(mouse_pos)
 
-            self.screen.fill(BLACK)
+            self.screen.blit(self.fundo, (0,0))
             for btn in self.buttons:
                 btn.draw(self.screen, mouse_pos)
 
             pygame.display.flip()
             clock.tick(FPS)
-
 
 class Game:
     def __init__(self):
