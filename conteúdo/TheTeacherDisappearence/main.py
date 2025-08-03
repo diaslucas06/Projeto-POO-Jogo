@@ -5,17 +5,18 @@ import os
 
 pygame.init()
 
-LARGURA = 900
-ALTURA = 500
+LARGURA = 1280
+ALTURA = 720
 
-todas_as_andar = pygame.sprite.Group()
+player_andar = pygame.sprite.Group()
 player = Player()
-todas_as_andar.add(player)
+player_andar.add(player)
 
 tela = pygame.display.set_mode((LARGURA, ALTURA))
 pygame.display.set_caption("The Teacher Disappearence")
 caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
 fundo = pygame.image.load(caminho).convert()
+fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
 relogio = pygame.time.Clock()
 
 while True:
@@ -28,8 +29,8 @@ while True:
             exit()
         if event.type == KEYDOWN:
             player.andando()
-            
+        
     teclas = pygame.key.get_pressed()
-    todas_as_andar.draw(tela)
-    todas_as_andar.update(teclas)
+    player_andar.draw(tela)
+    player_andar.update(teclas)
     pygame.display.flip()
