@@ -1,8 +1,8 @@
 import pygame
 import sys
 
-SCREEN_WIDTH = 900
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 FPS = 60
 
 WHITE = (255, 255, 255)
@@ -38,6 +38,7 @@ class Button:
 class Menu:
     def __init__(self, screen):
         self.screen = screen
+    
         mid_x = SCREEN_WIDTH // 2
         start_y = SCREEN_HEIGHT // 2 - 50
         gap = 70
@@ -54,7 +55,7 @@ class Menu:
         self.running = False
 
     def show_options(self):
-        print("Abrindo opções...")   
+        print("Abrindo opções...")  
 
     def exit_game(self):
         pygame.quit()
@@ -86,9 +87,11 @@ class Game:
     def run(self):
         menu = Menu(self.screen)
         menu.run()
+        
         self.game_loop()
 
     def game_loop(self):
+        
         clock = pygame.time.Clock()
         running = True
         while running:
@@ -96,7 +99,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
             self.screen.fill((30, 30, 30))
-            # Desenhe seu jogo aqui...
+            
             pygame.display.flip()
             clock.tick(FPS)
         pygame.quit()
