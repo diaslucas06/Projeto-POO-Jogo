@@ -21,10 +21,10 @@ class Player(pygame.sprite.Sprite):
         self.animacao_atual = self.andar_direita
         self.atual = 0
         self.image = self.andar_direita[self.atual]
-        self.image = pygame.transform.scale(self.image, (190, 310))
+        self.image = pygame.transform.scale(self.image, (150, 270))
         
         self.rect = self.image.get_rect()
-        self.rect.topleft = 300, 320
+        self.rect.topleft = 300, 340
         
         self.andar = False
         self.coletar = False
@@ -47,7 +47,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.agachar_direita
             else:
                 self.image = self.agachar_esquerda
-            self.image = pygame.transform.scale(self.image, (190, 310))
+            self.image = pygame.transform.scale(self.image, (150, 270))
             
         if teclas[pygame.K_d]:
             
@@ -76,7 +76,7 @@ class Player(pygame.sprite.Sprite):
             self.atual += 0.3
             if self.atual >= len(self.animacao_atual):
                 self.atual = 0
-            self.image = pygame.transform.scale(self.image, (190, 310))
+            self.image = pygame.transform.scale(self.image, (150, 270))
             self.coletar = False
             
         else:
