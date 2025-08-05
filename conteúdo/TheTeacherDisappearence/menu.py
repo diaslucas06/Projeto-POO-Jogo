@@ -3,8 +3,8 @@ import os
 import sys
 from main import Game
 
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+LARGURA_TELA = 1280
+ALTURA_TELA = 720
 FPS = 60
 
 WHITE = (255, 255, 255)
@@ -15,6 +15,7 @@ pygame.init()
 pygame.display.set_caption("The Teacher Disappearence")
 FONT = pygame.font.SysFont(None, 48)
 
+font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 30)
 
 class Button:
     def __init__(self, text, pos, callback):
@@ -41,10 +42,10 @@ class Menu:
     def __init__(self, screen):
         self.screen = screen
         self.fundo = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "corredores", f"CorredorA36.png"))
-        self.fundo = pygame.transform.scale(self.fundo, (1280, 720))
+        self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
     
-        mid_x = SCREEN_WIDTH // 2
-        start_y = SCREEN_HEIGHT // 2 - 50
+        mid_x = LARGURA_TELA // 2
+        start_y = ALTURA_TELA // 2 - 50
         gap = 70
 
         self.buttons = [
@@ -57,7 +58,7 @@ class Menu:
     def start_game(self):
         print("Iniciando o jogo...") 
         self.running = False
-        Game().run()
+        História().run()
 
     def show_options(self):
         print("Abrindo opções...")  
@@ -86,13 +87,51 @@ class Menu:
 
 class História:
     def __init__(self):
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+        self.running = True
+        self.dialog_text = ["Hello, adventurer! Welcome to the world of Pygame", "What are you doing?"]
+        self.text_view = False
+        self.y = 0
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
+        self.fundo = pygame.image.load(self.caminho).convert()
+        self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
+        self.screen.blit(self.fundo, (0,0))
 
     def run(self):
-        menu = Menu(self.screen)
-        menu.run()
         
-        self.game_loop()
+        LARGURA_DIALOGO = 1000
+        ALTURA_DIALOGO = 200
+        
+        x = (LARGURA_TELA - LARGURA_DIALOGO) // 2
+        y = (ALTURA_TELA - ALTURA_DIALOGO) // 2 + 200 
+        
+        dialog_rect = pygame.Rect(x, y, LARGURA_DIALOGO, ALTURA_DIALOGO)
+        pygame.draw.rect(self.screen, (50, 50, 50), dialog_rect)
+        
+        if self.text_view==False:
+            
+            for line in self.dialog_text:
+                
+                text_final = ""
+                x_position = x + 20
+                y_position = y + 20
+                
+                for s in line:
+                    
+                    text_final +=s 
+                    text_surface = font.render(text_final, True, (255, 255, 255))
+                    self.screen.blit(text_surface, (x_position, y_position + self.y))
+                    pygame.time.wait(50)
+                    pygame.display.flip()
+                    
+                self.y += 35 
+                self.text_view = True
+                pygame.time.wait(200)
+                pygame.display.update()
+                self.running = False
+                
+            pygame.time.wait(500)
+            self.game_loop()
 
     def game_loop(self):
         
@@ -102,12 +141,14 @@ class História:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            self.screen.fill((30, 30, 30))
+                if self.running == False:
+                    Game().run()
             
-            pygame.display.flip()
             clock.tick(FPS)
         pygame.quit()
 
 
 if __name__ == "__main__":
-    História().run()
+    history = História()
+    menu = Menu(history.screen)
+    menu.run()
