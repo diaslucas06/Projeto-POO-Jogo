@@ -44,7 +44,7 @@ class Menu:
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
     
         mid_x = LARGURA_TELA // 2
-        start_y = ALTURA_TELA // 2 - 50
+        start_y = ALTURA_TELA // 2 + 50 
         gap = 70
 
         self.buttons = [
