@@ -13,9 +13,8 @@ HIGHLIGHT = (70, 130, 180)
 
 pygame.init()
 pygame.display.set_caption("The Teacher Disappearence")
-FONT = pygame.font.SysFont(None, 48)
-
 font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 30)
+
 
 class Button:
     def __init__(self, text, pos, callback):
@@ -23,12 +22,12 @@ class Button:
         self.callback = callback
         self.default_color = WHITE
         self.highlight_color = HIGHLIGHT
-        self.label = FONT.render(self.text, True, self.default_color)
+        self.label = font.render(self.text, True, self.default_color)
         self.rect = self.label.get_rect(center=pos)
 
     def draw(self, surface, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
-            label = FONT.render(self.text, True, self.highlight_color)
+            label = font.render(self.text, True, self.highlight_color)
         else:
             label = self.label
         surface.blit(label, self.rect)
@@ -89,7 +88,9 @@ class História:
     def __init__(self):
         self.screen = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
         self.running = True
-        self.dialog_text = ["Hello, adventurer! Welcome to the world of Pygame", "What are you doing?"]
+        self.dialog_text = [
+            ["Em um dia chuvoso, você entrou na biblioteca do IF", "e começou a procurar por um livro para ler, no", "entanto, não conseguia encontrar nada que", "te agradasse..."],
+            ["Até que você encontrou um livro diferente, ele se", "destacava dos outros, tinha uma aparência velha", "que te chamou atenção. Sua capa era em um couro", "simples, sem muitos detalhes..."]]
         self.text_view = False
         self.y = 0
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
@@ -106,32 +107,53 @@ class História:
         y = (ALTURA_TELA - ALTURA_DIALOGO) // 2 + 200 
         
         dialog_rect = pygame.Rect(x, y, LARGURA_DIALOGO, ALTURA_DIALOGO)
-        pygame.draw.rect(self.screen, (50, 50, 50), dialog_rect)
         
-        if self.text_view==False:
+        if self.text_view == False:
             
-            for line in self.dialog_text:
+            for bloco in self.dialog_text:
+                self.y = 0
+                pygame.draw.rect(self.screen, (50, 50, 50), dialog_rect)
                 
-                text_final = ""
-                x_position = x + 20
-                y_position = y + 20
-                
-                for s in line:
+                for line in bloco:
                     
-                    text_final +=s 
-                    text_surface = font.render(text_final, True, (255, 255, 255))
-                    self.screen.blit(text_surface, (x_position, y_position + self.y))
-                    pygame.time.wait(50)
-                    pygame.display.flip()
+                    text_final = ""
+                    x_position = x + 20
+                    y_position = y + 20
                     
-                self.y += 35 
-                self.text_view = True
-                pygame.time.wait(200)
-                pygame.display.update()
-                self.running = False
+                    for s in line:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                pygame.quit()
+                                sys.exit()
+                                
+                        text_final +=s 
+                        text_surface = font.render(text_final, True, (255, 255, 255))
+                        self.screen.blit(text_surface, (x_position, y_position + self.y))
+                        pygame.display.flip()
+                        pygame.time.Clock().tick(30)
+                        
+                    self.y += 35 
+                    pygame.display.update()
+                    
+                pausa = True
+                pausa_tempo = 1500 
+                inicio_pausa = pygame.time.get_ticks()
                 
-            pygame.time.wait(500)
-            self.game_loop()
+                while pausa:
+                    
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            sys.exit()
+                            
+                    agora = pygame.time.get_ticks()
+                    if agora - inicio_pausa >= pausa_tempo:
+                        pausa = False
+                    pygame.time.Clock().tick(FPS)
+                
+            self.text_view = True
+            self.running = False
+            self.game_loop()    
 
     def game_loop(self):
         
