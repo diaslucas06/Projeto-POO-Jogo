@@ -13,7 +13,7 @@ HIGHLIGHT = (70, 130, 180)
 
 pygame.init()
 pygame.display.set_caption("The Teacher Disappearence")
-font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 30)
+font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 28)
 
 
 class Button:
@@ -90,29 +90,41 @@ class História:
         self.running = True
         self.dialog_text = [
             ["Em um dia chuvoso, você entrou na biblioteca do IF", "e começou a procurar por um livro para ler, no", "entanto, não conseguia encontrar nada que", "te agradasse..."],
-            ["Até que você encontrou um livro diferente, ele se", "destacava dos outros, tinha uma aparência velha", "que te chamou atenção. Sua capa era em um couro", "simples, sem muitos detalhes..."]]
+            ["Até que você encontrou um livro diferente, ele se", "destacava dos outros, tinha uma aparência velha", "que te chamou atenção. Sua capa era em um couro", "simples, sem muitos detalhes..."],
+            ["Até que você encontrou um livro diferente, ele se", "destacava dos outros, tinha uma aparência velha", "que te chamou atenção. Sua capa era em um couro", "simples, sem muitos detalhes..."]
+            ]
         self.text_view = False
         self.y = 0
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
-        self.fundo = pygame.image.load(self.caminho).convert()
-        self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
-        self.screen.blit(self.fundo, (0,0))
 
     def run(self):
         
-        LARGURA_DIALOGO = 1000
-        ALTURA_DIALOGO = 200
+        LARGURA_DIALOGO = 900
+        ALTURA_DIALOGO = 190
         
         x = (LARGURA_TELA - LARGURA_DIALOGO) // 2
         y = (ALTURA_TELA - ALTURA_DIALOGO) // 2 + 200 
         
         dialog_rect = pygame.Rect(x, y, LARGURA_DIALOGO, ALTURA_DIALOGO)
         
+        fundos = [
+            os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "biblioteca-ifrn.png"),
+            os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "biblioteca-ifrn.png"),
+            os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
+        ]
+        
         if self.text_view == False:
             
+            i = 0
             for bloco in self.dialog_text:
+                self.caminho = fundos[i]
+                self.fundo = pygame.image.load(self.caminho).convert()
+                self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
+                self.screen.blit(self.fundo, (0,0))
+                i += 1
+                    
                 self.y = 0
-                pygame.draw.rect(self.screen, (50, 50, 50), dialog_rect)
+                pygame.draw.rect(self.screen, (84, 66, 33), dialog_rect)
+                pygame.draw.rect(self.screen, (49, 38, 19), dialog_rect, 5)
                 
                 for line in bloco:
                     
