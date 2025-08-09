@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+from player import Player
 from main import Game
 
 LARGURA_TELA = 1280
@@ -95,6 +96,9 @@ class História:
             ]
         self.text_view = False
         self.y = 0
+        self.player_andar = pygame.sprite.Group()
+        self.player = Player()
+        self.player_andar.add(self.player)
 
     def run(self):
         
@@ -120,6 +124,11 @@ class História:
                 self.fundo = pygame.image.load(self.caminho).convert()
                 self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
                 self.screen.blit(self.fundo, (0,0))
+                
+                if "biblioteca-ifrn.png" in self.caminho:
+                    self.player.rect.topleft = 30, 400
+                    self.player_andar.draw(self.screen)
+                
                 i += 1
                     
                 self.y = 0
