@@ -40,7 +40,7 @@ class Button:
 class Menu:
     def __init__(self, screen):
         self.screen = screen
-        self.fundo = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "corredores", f"CorredorA36.png"))
+        self.fundo = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "Imagem_menu.png"))
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
     
         mid_x = LARGURA_TELA // 2
