@@ -12,10 +12,11 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BOX = (84, 66, 33)
 BORDER = (49, 38, 19)
-HIGHLIGHT = (70, 130, 180)
+HIGHLIGHT = (128, 0, 32)
 
 pygame.init()
 pygame.display.set_caption("The Teacher Disappearence")
+font_start = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "pristina.ttf"), 56)
 font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 28)
 font_aviso = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 20)
 
@@ -25,12 +26,12 @@ class Button:
         self.callback = callback
         self.default_color = WHITE
         self.highlight_color = HIGHLIGHT
-        self.label = font.render(self.text, True, self.default_color)
+        self.label = font_start.render(self.text, True, self.default_color)
         self.rect = self.label.get_rect(center=pos)
 
     def draw(self, surface, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
-            label = font.render(self.text, True, self.highlight_color)
+            label = font_start.render(self.text, True, self.highlight_color)
         else:
             label = self.label
         surface.blit(label, self.rect)
@@ -47,8 +48,8 @@ class Menu:
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
     
         mid_x = LARGURA_TELA // 2
-        start_y = ALTURA_TELA // 2 + 50 
-        gap = 70
+        start_y = ALTURA_TELA // 2 + 75
+        gap = 80
 
         self.buttons = [
             Button("Iniciar Jogo", (mid_x, start_y), self.start_game),
