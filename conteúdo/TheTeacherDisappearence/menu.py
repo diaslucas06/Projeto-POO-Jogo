@@ -10,12 +10,14 @@ FPS = 60
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+BOX = (84, 66, 33)
+BORDER = (49, 38, 19)
 HIGHLIGHT = (70, 130, 180)
 
 pygame.init()
 pygame.display.set_caption("The Teacher Disappearence")
 font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 28)
-
+font_aviso = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 20)
 
 class Button:
     def __init__(self, text, pos, callback):
@@ -101,7 +103,8 @@ class História:
         self.player_andar = pygame.sprite.Group()
         self.player = Player()
         self.player_andar.add(self.player)
-
+        self.aviso = font_aviso.render("ESPAÇO - pular toda a história", True, WHITE)
+        
     def run(self):
         
         LARGURA_DIALOGO = 900
@@ -121,23 +124,23 @@ class História:
         ]
         
         if self.text_view == False:
-            
+                     
             i = 0
             for bloco in self.dialog_text:
+                
                 self.caminho = fundos[i]
                 self.fundo = pygame.image.load(self.caminho).convert()
                 self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
                 self.screen.blit(self.fundo, (0,0))
+                self.screen.blit(self.aviso, (20,20))
                 
                 if "biblioteca-ifrn.png" in self.caminho:
                     self.player.rect.topleft = 30, 400
                     self.player_andar.draw(self.screen)
-                
-                i += 1
-                    
+                        
                 self.y = 0
-                pygame.draw.rect(self.screen, (84, 66, 33), dialog_rect)
-                pygame.draw.rect(self.screen, (49, 38, 19), dialog_rect, 5)
+                pygame.draw.rect(self.screen, BOX, dialog_rect)
+                pygame.draw.rect(self.screen, BORDER, dialog_rect, 5)
                 
                 for line in bloco:
                     
@@ -146,13 +149,16 @@ class História:
                     y_position = y + 20
                     
                     for s in line:
+                        teclas = pygame.key.get_pressed()
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT:
                                 pygame.quit()
                                 sys.exit()
+                            if teclas[pygame.K_SPACE]:
+                                Game().run()
                                 
                         text_final +=s 
-                        text_surface = font.render(text_final, True, (255, 255, 255))
+                        text_surface = font.render(text_final, True, WHITE)
                         self.screen.blit(text_surface, (x_position, y_position + self.y))
                         pygame.display.flip()
                         pygame.time.Clock().tick(30)
@@ -160,26 +166,25 @@ class História:
                     self.y += 35 
                     pygame.display.update()
                     
+                i += 1
                 pausa = True
                 pausa_tempo = 1500 
                 inicio_pausa = pygame.time.get_ticks()
                 
                 while pausa:
-                    
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
                             pygame.quit()
-                            sys.exit()
-                            
+                            sys.exit()    
                     agora = pygame.time.get_ticks()
                     if agora - inicio_pausa >= pausa_tempo:
                         pausa = False
                     pygame.time.Clock().tick(FPS)
-                
+
             self.text_view = True
             self.running = False
             self.game_loop()    
-
+            
     def game_loop(self):
         
         clock = pygame.time.Clock()
