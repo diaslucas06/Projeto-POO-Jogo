@@ -92,7 +92,9 @@ class História:
         self.dialog_text = [
             ["Em um dia chuvoso, você entrou na biblioteca do IF", "e começou a procurar por um livro para ler, no", "entanto, não conseguia encontrar nada que", "te agradasse..."],
             ["Até que você encontrou um livro diferente, ele se", "destacava dos outros, tinha uma aparência velha", "que te chamou atenção. Sua capa era em um couro", "simples, sem muitos detalhes..."],
-            ["Até que você encontrou um livro diferente, ele se", "destacava dos outros, tinha uma aparência velha", "que te chamou atenção. Sua capa era em um couro", "simples, sem muitos detalhes..."]
+            ["Ao abrir o livro, você se depara com o nome da", "professora Maíra do curso de informática, que se", "encontrava desaparecida do campus há alguns", "dias."],
+            ["Além disso uma matricula estava escrita", "nas informações deixadas pela professora,", "dizendo para tomar cuidado com quem", "quer que fosse esse aluno."],
+            ["Agora você precisa desvendar esse misterio e","enfrentar desafios para descobrir qual o", "segredo por trás de tudo isso..."]
             ]
         self.text_view = False
         self.y = 0
@@ -113,7 +115,9 @@ class História:
         fundos = [
             os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "biblioteca-ifrn.png"),
             os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "biblioteca-ifrn.png"),
-            os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
+            os.path.join(os.path.dirname(__file__), "data", "images", "livro-maíra.png"),
+            os.path.join(os.path.dirname(__file__), "data", "images", "livro-maíra.png"),
+            os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "biblioteca-ifrn.png")
         ]
         
         if self.text_view == False:
