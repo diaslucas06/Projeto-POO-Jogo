@@ -4,6 +4,8 @@ import os
 PLAYER_LARGURA = 150
 PLAYER_ALTURA = 270
 
+LARGURA_TELA = 1280
+
 class Player(pygame.sprite.Sprite):
     
     def __init__(self):
@@ -44,46 +46,52 @@ class Player(pygame.sprite.Sprite):
     
     def update(self, teclas):
         
-        if self.coletar:
+        if self.rect.x < LARGURA_TELA - PLAYER_LARGURA and self.rect.x > 0:
             
-            if self.ultima_direcao == "direita":
-                self.image = self.agachar_direita
+            if self.coletar:
+                
+                if self.ultima_direcao == "direita":
+                    self.image = self.agachar_direita
+                else:
+                    self.image = self.agachar_esquerda
+                self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+                
+            if teclas[pygame.K_d]:
+                
+                self.ultima_direcao = "direita"
+                self.rect.x += self.velocidade
+                
+                if self.atual >= len(self.andar_direita):
+                    self.atual = 0
+                self.animacao_atual = self.andar_direita
+                self.image = self.andar_direita[int(self.atual)]
+                self.andar = True
+                
+            elif teclas[pygame.K_a]:
+                
+                self.ultima_direcao = "esquerda"
+                self.rect.x -= self.velocidade
+                if self.atual >= len(self.andar_esquerda):
+                    self.atual = 0
+                self.animacao_atual = self.andar_esquerda
+                self.image = self.andar_esquerda[int(self.atual)]
+                self.andar = True
+                
             else:
-                self.image = self.agachar_esquerda
-            self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-            
-        if teclas[pygame.K_d]:
-            
-            self.ultima_direcao = "direita"
-            self.rect.x += self.velocidade
-            if self.atual >= len(self.andar_direita):
-                self.atual = 0
-            self.animacao_atual = self.andar_direita
-            self.image = self.andar_direita[int(self.atual)]
-            self.andar = True
-            
-        elif teclas[pygame.K_a]:
-            
-            self.ultima_direcao = "esquerda"
-            self.rect.x -= self.velocidade
-            if self.atual >= len(self.andar_esquerda):
-                self.atual = 0
-            self.animacao_atual = self.andar_esquerda
-            self.image = self.andar_esquerda[int(self.atual)]
-            self.andar = True
-            
+                self.andar = False
+                
+            if self.andar:
+                self.atual += 0.3
+                if self.atual >= len(self.animacao_atual):
+                    self.atual = 0
+                self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+                self.coletar = False
+                
+            else:
+                self.atual = 0  
+
+        elif self.rect.x >= LARGURA_TELA - PLAYER_LARGURA:
+            self.rect.x = self.rect.x -1
+
         else:
-            self.andar = False
-            
-        if self.andar:
-            self.atual += 0.3
-            if self.atual >= len(self.animacao_atual):
-                self.atual = 0
-            self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-            self.coletar = False
-            
-        else:
-            self.atual = 0  
-            
-            
-            
+            self.rect.x = self.rect.x + 1
