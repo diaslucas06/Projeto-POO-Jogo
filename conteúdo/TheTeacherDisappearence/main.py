@@ -42,11 +42,11 @@ class Game():
                 elif event.type == KEYDOWN:
                     self.player.andando()
                     
-            for item in self.items:
-                if self.player.rect.colliderect(item.rect) and not item.coletado:
-                    if self.teclas[pygame.K_e]:
-                        self.player.coletando()
-                        item.coletado = True
+                for item in self.items:
+                    if self.player.rect.colliderect(item.rect) and not item.coletado:
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            self.player.coletando()
+                            item.coletado = True
                             
             self.items.update()            
             self.player_andar.update(self.teclas)
