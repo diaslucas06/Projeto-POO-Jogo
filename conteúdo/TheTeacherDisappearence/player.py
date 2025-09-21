@@ -1,8 +1,8 @@
 import pygame 
 import os
 
-PLAYER_LARGURA = 150
-PLAYER_ALTURA = 270
+PLAYER_LARGURA = 170
+PLAYER_ALTURA = 300
 
 LARGURA_TELA = 1280
 
@@ -14,10 +14,10 @@ class Player(pygame.sprite.Sprite):
         self.andar_direita = []
         self.andar_esquerda = []
         
-        for i in range(1,6):
+        for i in range(1,12):
             self.andar_direita.append(pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "personagens", f"andando-direita{i}.png")))
             
-        for i in range(1,6):
+        for i in range(1,12):
             self.andar_esquerda.append(pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "personagens", f"andando-esquerda{i}.png")))
         
         self.agachar_direita = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "personagens", "agachando-direita.png"))
@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
         self.rect = self.image.get_rect()
-        self.rect.topleft = 300, 340
+        self.rect.topleft = 300, 300
         
         self.andar = False
         self.coletar = False
