@@ -49,10 +49,13 @@ class Cenario():
         self.fundo = pygame.image.load(self.caminho).convert()
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA, ALTURA))
         self.teclas = pygame.key.get_pressed()
+        colidiu = "Não"
         
         for event in pygame.event.get():
             if event.type == KEYDOWN:
-                self.player.andando()
+               colidiu = self.player.andando()
+               print(colidiu)
+
                 
             for item in self.items:
                 if self.player.rect.colliderect(item.rect) and not item.coletado:
@@ -61,7 +64,9 @@ class Cenario():
                         item.coletado = True
                         
         self.items.update()            
-        self.player_andar.update(self.teclas)
+        colidiu = self.player.update(self.teclas)
+        if colidiu:
+            print(colidiu)
         
         self.tela.blit(self.fundo, (0,0))
         self.items.draw(self.tela)
