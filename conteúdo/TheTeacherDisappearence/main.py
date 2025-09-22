@@ -41,8 +41,6 @@ class Cenario():
         self.tela = pygame.display.set_mode((LARGURA, ALTURA))
         
         self.items = pygame.sprite.Group()
-        self.chave = Key1()
-        self.items.add(self.chave)
         
     def desenhar(self):
         
@@ -62,12 +60,11 @@ class Cenario():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.player.coletando()
                         item.coletado = True
-                        
-        self.items.update()            
+                
         colidiu = self.player.update(self.teclas)
         if colidiu:
-            print(colidiu)
-        
+            Game(cenario=Cenario2()).run()      
+        self.items.update()            
         self.tela.blit(self.fundo, (0,0))
         self.items.draw(self.tela)
         self.player_andar.draw(self.tela)
@@ -76,6 +73,8 @@ class Cenario1(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
+        self.chave = Key1()
+        self.items.add(self.chave)
         
 class Cenario2(Cenario):
     def __init__(self):
