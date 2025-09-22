@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 from player import Player
-from main import Game
+from main import Game, Cenario1
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720
@@ -156,7 +156,7 @@ class História:
                                 pygame.quit()
                                 sys.exit()
                             if teclas[pygame.K_SPACE]:
-                                Game().run()
+                                Game(cenario=Cenario1()).run()
                                 
                         text_final +=s 
                         text_surface = font.render(text_final, True, WHITE)
@@ -195,7 +195,8 @@ class História:
                 if event.type == pygame.QUIT:
                     running = False
                 if self.running == False:
-                    Game().run()
+                    
+                    Game(cenario=Cenario1()).run()
             
             clock.tick(FPS)
         pygame.quit()

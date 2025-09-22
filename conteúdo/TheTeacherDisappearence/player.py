@@ -92,6 +92,6 @@ class Player(pygame.sprite.Sprite):
 
         elif self.rect.x >= LARGURA_TELA - PLAYER_LARGURA:
             self.rect.x = self.rect.x -1
-
+            
         else:
             self.rect.x = self.rect.x + 1
