@@ -35,6 +35,10 @@ class Game():
             novo_cenario = self.cenario.desenhar()
             if novo_cenario:
                 self.cenario = novo_cenario
+                if player.ultima_direcao == "esquerda":
+                    player.rect.topleft = (1100, 300)
+                else:
+                    player.rect.topleft = (0, 300)
             pygame.display.flip()
 
 
@@ -74,7 +78,6 @@ class Cenario():
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda":
-            self.player.rect.topleft = (1100, 300)
             return None
         else:
             return None
