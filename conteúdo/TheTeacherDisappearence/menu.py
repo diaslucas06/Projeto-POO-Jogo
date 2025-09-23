@@ -195,7 +195,6 @@ class História:
                 if event.type == pygame.QUIT:
                     running = False
                 if self.running == False:
-                    
                     Game(cenario=Cenario1()).run()
             
             clock.tick(FPS)
