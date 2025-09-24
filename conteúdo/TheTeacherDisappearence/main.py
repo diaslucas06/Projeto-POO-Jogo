@@ -11,7 +11,7 @@ ALTURA = 720
 FPS = 30
 
 chave = Key1()
-player = Player() 
+player = Player()
 
 class Game():
     def __init__(self, cenario):
@@ -40,7 +40,6 @@ class Game():
                 else:
                     player.rect.topleft = (0, 300)
             pygame.display.flip()
-
 
 class Cenario():
     def __init__(self):
@@ -93,7 +92,7 @@ class Cenario1(Cenario):
         if self.player.ultima_direcao == "esquerda":
             return Cenario2()
         else:
-            return None
+            return Cenario3()
         
 class Cenario2(Cenario):
     def __init__(self):
@@ -105,3 +104,14 @@ class Cenario2(Cenario):
             return None
         else:
             return Cenario1()
+        
+class Cenario3(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA28.png")
+        
+    def mudar_tela(self):
+        if self.player.ultima_direcao == "esquerda":
+            return Cenario1()
+        else:
+            return None
