@@ -37,7 +37,7 @@ class Game():
                 self.cenario = novo_cenario
                 if player.ultima_direcao == "esquerda":
                     player.rect.topleft = (1100, 300)
-                else:
+                elif player.ultima_direcao == "direita":
                     player.rect.topleft = (0, 300)
             pygame.display.flip()
 
@@ -76,10 +76,7 @@ class Cenario():
         self.player_andar.draw(self.tela)
         
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda":
-            return None
-        else:
-            return None
+        return None
             
 class Cenario1(Cenario):
     def __init__(self):
@@ -89,9 +86,9 @@ class Cenario1(Cenario):
             self.items.add(chave)
     
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda":
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return Cenario2()
-        else:
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return Cenario3()
         
 class Cenario2(Cenario):
@@ -100,9 +97,9 @@ class Cenario2(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
         
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda":
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return None
-        else:
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return Cenario1()
         
 class Cenario3(Cenario):
@@ -111,7 +108,7 @@ class Cenario3(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA28.png")
         
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda":
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return Cenario1()
-        else:
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
