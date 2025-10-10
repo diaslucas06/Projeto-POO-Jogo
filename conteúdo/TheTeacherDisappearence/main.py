@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from player import Player
 from items.keys import Key1
+from hud import Inventario
 import os
 
 pygame.init()
@@ -50,12 +51,14 @@ class Cenario():
         self.teclas = pygame.key.get_pressed()
         self.colidiu = self.player.update(self.teclas)
         self.items = pygame.sprite.Group()
+        self.lista_itens = []
         
     def desenhar(self):
         
         self.fundo = pygame.image.load(self.caminho).convert()
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA, ALTURA))
         self.teclas = pygame.key.get_pressed()
+        self.inventario = Inventario()
         
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -66,17 +69,22 @@ class Cenario():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.player.coletando()
                         item.coletado = True
+                        self.lista_itens.append(item)
                 
         colidiu = self.player.update(self.teclas)
         if colidiu:
             return self.mudar_tela()
         self.items.update()            
         self.tela.blit(self.fundo, (0,0))
+        self.tela.blit(self.inventario.imagem, (150,610))
         self.items.draw(self.tela)
         self.player_andar.draw(self.tela)
         
     def mudar_tela(self):
-        return None
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+            return Cenario2()
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
+            return Cenario3()
             
 class Cenario1(Cenario):
     def __init__(self):
