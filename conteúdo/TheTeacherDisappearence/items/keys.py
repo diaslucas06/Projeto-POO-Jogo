@@ -1,7 +1,7 @@
 import pygame 
 import os
 
-class Key1(pygame.sprite.Sprite):
+class Key(pygame.sprite.Sprite):
     
     def __init__(self):
         
@@ -13,8 +13,19 @@ class Key1(pygame.sprite.Sprite):
         self.rect.topleft = 500, 520
         
         self.coletado = False
+        self.i = 330
         
     def update(self):
         if self.coletado:
-            self.kill()
+            self.image = pygame.transform.scale(self.image, (25, 40))
+            self.rect.topleft = self.i, 635
+            self.i += 50
+            self.coletado = False
             
+class Key1(Key):
+    def __init__(self):
+        super().__init__()
+        
+class Key2(Key):
+    def __init__(self):
+        super().__init__()

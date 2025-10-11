@@ -51,7 +51,7 @@ class Menu:
         start_y = ALTURA_TELA // 2 + 75
         gap = 80
 
-        self.buttons = [
+        self.buttons = [ 
             Button("Iniciar Jogo", (mid_x, start_y), self.start_game),
             Button("Opções",       (mid_x, start_y + gap), self.show_options),
             Button("Sair",         (mid_x, start_y + 2*gap), self.exit_game),
@@ -156,7 +156,7 @@ class História:
                                 pygame.quit()
                                 sys.exit()
                             if teclas[pygame.K_SPACE]:
-                                Game(cenario=CorredorA36  ()).run()
+                                Game(cenario=CorredorA36()).run()
                                 
                         text_final +=s 
                         text_surface = font.render(text_final, True, WHITE)
