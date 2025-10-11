@@ -62,9 +62,6 @@ class Cenario():
         
         self.fundo = pygame.image.load(self.caminho).convert()
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA, ALTURA))
-        self.cadeiras = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "salas", "cadeiras.png")).convert()
-        self.cadeiras = pygame.transform.scale(self.cadeiras, (LARGURA, ALTURA))
-        self.teclas = pygame.key.get_pressed()
         
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
