@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
         self.rect = self.image.get_rect()
-        self.rect.topleft = 300, 290
+        self.rect.topleft = 300, 300
         
         self.andar = False
         self.coletar = False

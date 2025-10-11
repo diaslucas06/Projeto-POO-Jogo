@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from player import Player
 from items.keys import Key1
-from hud import Inventario
+from ui.hud import Inventario
 import os
 
 pygame.init()
@@ -61,9 +61,6 @@ class Cenario():
         self.inventario = Inventario()
         
         for event in pygame.event.get():
-            if event.type == KEYDOWN:
-               colidiu = self.player.andando()
-
             for item in self.items:
                 if self.player.rect.colliderect(item.rect) and not item.coletado:
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -76,17 +73,17 @@ class Cenario():
             return self.mudar_tela()
         self.items.update()            
         self.tela.blit(self.fundo, (0,0))
-        self.tela.blit(self.inventario.imagem, (150,610))
+        self.tela.blit(self.inventario.image, (150,610))
         self.items.draw(self.tela)
         self.player_andar.draw(self.tela)
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            return Cenario2()
+            return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
-            return Cenario3()
+            return None
             
-class Cenario1(Cenario):
+class CorredorA36(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
@@ -95,11 +92,11 @@ class Cenario1(Cenario):
     
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            return Cenario2()
+            return CorredorA38()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
-            return Cenario3()
-        
-class Cenario2(Cenario):
+            return CorredorA30()
+            
+class CorredorA38(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
@@ -108,15 +105,26 @@ class Cenario2(Cenario):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
-            return Cenario1()
+            return CorredorA36()
         
-class Cenario3(Cenario):
+class CorredorA30(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA28.png")
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            return Cenario1()
+            return CorredorA36()
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
+            return None
+        
+class SalaA36(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "SalaA36.png")
+        
+    def mudar_tela(self):
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+            return CorredorA36()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
