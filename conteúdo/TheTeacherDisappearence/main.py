@@ -130,7 +130,7 @@ class CorredorA30(Cenario):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA36()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
-            return SalaA36()
+            return CorredorA26()
         
 class SalaA36(Cenario):
     
@@ -155,7 +155,7 @@ class LabM5(Cenario):
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            return None
+            return CorredorA26()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
         
@@ -184,4 +184,17 @@ class CorredorA42(Cenario):
             return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return CorredorA38()
+        
+class CorredorA26(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA26.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        
+    def mudar_tela(self):
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+            return CorredorA30()
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
+            return LabM5()
     
