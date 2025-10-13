@@ -10,3 +10,4 @@ class Inventario():
         self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "inventario.png"))
         self.image = pygame.transform.scale(self.image, (INVENTARIO_LARGURA, INVENTARIO_ALTURA))
         self.items = []
+        self.i = 280

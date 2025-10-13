@@ -1,8 +1,7 @@
 import pygame
 from pygame.locals import *
 from player import Player
-from items.keys import Key1, Key2
-from items.tools import Fita
+from items.keys import Key1, Fita
 from ui.hud import Inventario
 import os
 
@@ -16,7 +15,6 @@ ALTURA = 720
 FPS = 30
 
 chave = Key1()
-chave2 = Key2()
 fita = Fita()
 player = Player()
 
@@ -95,7 +93,10 @@ class Cenario():
             return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
-            
+        
+    def entrar_porta(self):
+        return None
+  
 class CorredorA36(Cenario):
     def __init__(self):
         super().__init__()
@@ -105,17 +106,26 @@ class CorredorA36(Cenario):
         self.porta = pygame.Rect(540,200,180,340)
     
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+        if self.colidiu_porta:
+            self.colidiu_porta = False
+            return SalaA36()
+        elif self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA38()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return CorredorA30()
+
+    def desenhar(self):
+        super().desenhar()
+        self.colidiu_porta = False
+        if self.player.rect.colliderect(self.porta):
+            self.colidiu_porta = True
+            if self.teclas[pygame.K_e]:
+                return self.mudar_tela()
 
 class CorredorA38(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
-        if chave2 not in self.items:
-            self.items.add(chave2)
             
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
