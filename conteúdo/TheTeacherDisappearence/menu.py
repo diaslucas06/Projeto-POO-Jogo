@@ -5,7 +5,7 @@ from player import Player
 from main import Game, CorredorA36
 
 LARGURA_TELA = 1280
-ALTURA_TELA = 720
+ALTURA_TELA = 720 
 FPS = 60
 
 WHITE = (255, 255, 255)

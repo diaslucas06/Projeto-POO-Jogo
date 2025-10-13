@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
         self.rect = self.image.get_rect()
-        self.rect.topleft = 300, 290
+        self.rect.topleft = 300, 295
         
         self.andar = False
         self.coletar = False
@@ -89,7 +89,7 @@ class Player(pygame.sprite.Sprite):
                 
             else:
                 self.atual = 0  
-
+                
         elif self.rect.x >= LARGURA_TELA - PLAYER_LARGURA:
             self.rect.x = self.rect.x -1
             return "colidiu"
