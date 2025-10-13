@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from player import Player
 from items.keys import Key1, Key2
+from items.tools import Fita
 from ui.hud import Inventario
 import os
 
@@ -16,6 +17,7 @@ FPS = 30
 
 chave = Key1()
 chave2 = Key2()
+fita = Fita()
 player = Player()
 
 inventario = Inventario()
@@ -43,11 +45,11 @@ class Game():
             if novo_cenario:
                 self.cenario = novo_cenario
                 if player.ultima_direcao == "esquerda":
-                    player.rect.topleft = (1100, 290)
+                    player.rect.topleft = (1100, 295)
                 elif player.ultima_direcao == "direita":
-                    player.rect.topleft = (0, 290)
+                    player.rect.topleft = (0, 295)
             pygame.display.flip()
-
+            
 class Cenario():
     def __init__(self):
         self.player_andar = pygame.sprite.Group()
@@ -138,6 +140,8 @@ class SalaA36(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "SalaA36.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if fita not in self.items:
+            self.items.add(fita)
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
@@ -157,7 +161,7 @@ class LabM5(Cenario):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA26()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
-            return None
+            return SalaA36()
         
 class LabM6(Cenario):
     
@@ -195,6 +199,6 @@ class CorredorA26(Cenario):
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA30()
-        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
+        elif self.player.ultima_direcao == "direita" and self.player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return LabM5()
     
