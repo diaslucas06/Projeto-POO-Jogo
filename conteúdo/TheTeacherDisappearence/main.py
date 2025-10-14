@@ -14,12 +14,16 @@ LARGURA = 1280
 ALTURA = 720
 FPS = 30
 
+WHITE = (255, 255, 255)
+
 chave = Key1()
 fita = Fita()
 player = Player()
 
 inventario = Inventario()
 lista_itens = []
+
+font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 20)
 
 class Game():
     def __init__(self, cenario):
@@ -57,32 +61,29 @@ class Cenario():
         self.teclas = pygame.key.get_pressed()
         self.colidiu = self.player.update(self.teclas)
         self.items = pygame.sprite.Group()
+        self.pegar = font.render("Pressione 'P' para pegar o item", True, WHITE)
         
     def desenhar(self):
         
         self.fundo = pygame.image.load(self.caminho).convert()
         self.fundo = pygame.transform.scale(self.fundo, (LARGURA, ALTURA))
         self.teclas = pygame.key.get_pressed()
-        
-        mouse = pygame.mouse.get_pos()
-        for event in pygame.event.get():
-            for item in self.items:
-                if item.rect.collidepoint(mouse):
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-                    if self.player.rect.colliderect(item.rect) and not item.coletado:
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            self.player.coletando()
-                            lista_itens.append(item)
-                            item.coletado = True
-                else: 
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                
+                            
         colidiu = self.player.update(self.teclas)
         if colidiu:
             return self.mudar_tela()
         self.items.update()            
         self.tela.blit(self.fundo, (0,0))
         self.tela.blit(inventario.image, (300,610))
+        
+        for item in self.items:
+            if self.player.rect.colliderect(item.rect) and not item.coletado:
+                self.tela.blit(self.pegar, (20, 20))
+                if self.teclas[pygame.K_p]:
+                    self.player.coletando()
+                    lista_itens.append(item)
+                    item.coletado = True
+        
         self.items.draw(self.tela)
         for item in lista_itens:
             self.tela.blit(item.image, item.rect.topleft)
@@ -93,9 +94,6 @@ class Cenario():
             return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
-        
-    def entrar_porta(self):
-        return None
   
 class CorredorA36(Cenario):
     def __init__(self):
@@ -106,21 +104,10 @@ class CorredorA36(Cenario):
         self.porta = pygame.Rect(540,200,180,340)
     
     def mudar_tela(self):
-        if self.colidiu_porta:
-            self.colidiu_porta = False
-            return SalaA36()
-        elif self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA38()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return CorredorA30()
-
-    def desenhar(self):
-        super().desenhar()
-        self.colidiu_porta = False
-        if self.player.rect.colliderect(self.porta):
-            self.colidiu_porta = True
-            if self.teclas[pygame.K_e]:
-                return self.mudar_tela()
 
 class CorredorA38(Cenario):
     def __init__(self):

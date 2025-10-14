@@ -38,9 +38,6 @@ class Player(pygame.sprite.Sprite):
         
         self.ultima_direcao = "direita"
         
-    def andando(self):
-        self.andar = True
-        
     def coletando(self):
         self.coletar = True
     
