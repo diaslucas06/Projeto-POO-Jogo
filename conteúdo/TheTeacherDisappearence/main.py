@@ -73,6 +73,11 @@ class Cenario():
         self.entrar_sala = False
         self.entrar = font.render("Pressione 'E' para entrar na porta", True, WHITE)
         self.pegar = font.render("Pressione 'P' para pegar o item", True, WHITE)
+        self.tecla_p = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "teclas", "tecla_p.png"))
+        self.tecla_p = pygame.transform.scale(self.tecla_p, (30, 30))
+        self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "teclas", "tecla_e.png"))
+        self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
+        
         
     def desenhar(self):
         
@@ -89,7 +94,8 @@ class Cenario():
         
         for item in self.items:
             if self.player.rect.colliderect(item.rect) and not item.coletado:
-                self.tela.blit(self.pegar, (20, 20))
+                self.tela.blit(self.pegar, (60, 20))
+                self.tela.blit(self.tecla_p, (20, 20))
                 if self.teclas[pygame.K_p]:
                     pegar_item_som.play()
                     self.player.coletando()
@@ -97,12 +103,15 @@ class Cenario():
                     item.coletado = True
         
         if self.player.rect.colliderect(self.porta):
-            self.tela.blit(self.entrar, (20,20))
+            self.tela.blit(self.entrar, (60,20))
+            self.tela.blit(self.tecla_e, (20, 20))
             if self.teclas[pygame.K_e]:
                 self.entrar_sala = True
                 abrir_porta_som.play()
                 return self.mudar_tela()
-        
+        if player.saindo_porta:
+            player.saindo_porta = False
+            player.rect.topleft = (self.porta.left, 295)
         self.items.draw(self.tela)
         for item in lista_itens:
             self.tela.blit(item.image, item.rect.topleft)
@@ -172,13 +181,14 @@ class SalaA36(Cenario):
         
         if chave_m5 not in self.items:
             self.items.add(chave_m5)
-        
+            
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            player.rect.topleft = (600, 350)
+            player.saindo_porta = True
             return CorredorA36()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
+            
         
 class SalaA38(Cenario):
     
@@ -195,7 +205,7 @@ class SalaA38(Cenario):
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            player.rect.topleft = (600, 350)
+            player.saindo_porta = True
             return CorredorA38()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
