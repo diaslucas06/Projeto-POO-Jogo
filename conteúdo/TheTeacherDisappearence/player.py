@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         
         self.andar = False
         self.coletar = False
+        self.saindo_porta = False
         
         self.velocidade = 8
         
@@ -44,7 +45,7 @@ class Player(pygame.sprite.Sprite):
     def update(self, teclas):
         
         if self.rect.x < LARGURA_TELA - PLAYER_LARGURA and self.rect.x > 0:
-            
+                
             if self.coletar:
                 
                 if self.ultima_direcao == "direita":
