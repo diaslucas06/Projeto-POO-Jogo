@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from player import Player
-from items.keys import Key1, Fita
+from items.keys import Key1, Key2, Fita
 from ui.sounds import Musica, Som
 from ui.hud import Inventario
 import os
@@ -18,6 +18,7 @@ FPS = 30
 WHITE = (255, 255, 255)
 
 chave = Key1(300, 520)
+chave_m5 = Key2(300, 520)
 fita = Fita(500, 530)
 player = Player()
 
@@ -25,6 +26,7 @@ inventario = Inventario()
 lista_itens = []
 
 pegar_item_som = Som("smw_stomp.mp3")
+abrir_porta_som = Som("smw_door_opens.wav")
 
 font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 20)
 sair_sala = False
@@ -81,7 +83,7 @@ class Cenario():
         colidiu = self.player.update(self.teclas)
         if colidiu:
             return self.mudar_tela()
-        self.items.update()            
+        self.items.update(inventario)            
         self.tela.blit(self.fundo, (0,0))
         self.tela.blit(inventario.image, (300,610))
         
@@ -98,6 +100,7 @@ class Cenario():
             self.tela.blit(self.entrar, (20,20))
             if self.teclas[pygame.K_e]:
                 self.entrar_sala = True
+                abrir_porta_som.play()
                 return self.mudar_tela()
         
         self.items.draw(self.tela)
@@ -135,9 +138,13 @@ class CorredorA38(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
+        self.porta = pygame.Rect(600,200,180,340)
             
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return SalaA38()
+        elif self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA42()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return CorredorA36()
@@ -163,8 +170,8 @@ class SalaA36(Cenario):
         self.player.image = self.player.andar_direita[int(self.player.atual)]
         self.player.image = pygame.transform.scale(self.player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
-        if fita not in self.items:
-            self.items.add(fita)
+        if chave_m5 not in self.items:
+            self.items.add(chave_m5)
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
@@ -173,6 +180,25 @@ class SalaA36(Cenario):
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
         
+class SalaA38(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "SalaA36.png")
+        self.player.ultima_direcao = "direita"
+        self.player.animacao_atual = self.player.andar_direita
+        self.player.image = self.player.andar_direita[int(self.player.atual)]
+        self.player.image = pygame.transform.scale(self.player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        
+        if fita not in self.items:
+            self.items.add(fita)
+        
+    def mudar_tela(self):
+        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+            player.rect.topleft = (600, 350)
+            return CorredorA38()
+        elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
+            return None
         
 class LabM5(Cenario):
     
