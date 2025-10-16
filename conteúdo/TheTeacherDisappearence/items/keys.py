@@ -32,6 +32,6 @@ class Key2(Item):
 class Fita(Item):
     
     def __init__(self, x, y):
-        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "Itens_do_jogador.png")
+        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "fita.png")
         super().__init__(x, y)
         
