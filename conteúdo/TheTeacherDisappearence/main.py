@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from player import Player
 from items.keys import Key1, Fita
+from ui.sounds import Musica, Som
 from ui.hud import Inventario
 import os
 
@@ -16,14 +17,17 @@ FPS = 30
 
 WHITE = (255, 255, 255)
 
-chave = Key1()
-fita = Fita()
+chave = Key1(300, 520)
+fita = Fita(500, 530)
 player = Player()
 
 inventario = Inventario()
 lista_itens = []
 
+pegar_item_som = Som("smw_stomp.mp3")
+
 font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 20)
+sair_sala = False
 
 class Game():
     def __init__(self, cenario):
@@ -31,6 +35,8 @@ class Game():
         pygame.display.set_caption("The Teacher Disappearence")
         self.relogio = pygame.time.Clock()    
         self.cenario = cenario
+        musica = Musica("Robert Blumenau - Suspense.mp3")
+        musica.play()
 
     def run(self):
     
@@ -46,7 +52,7 @@ class Game():
             novo_cenario = self.cenario.desenhar()
             if novo_cenario:
                 self.cenario = novo_cenario
-                if player.ultima_direcao == "esquerda":
+                if player.ultima_direcao == "esquerda":   
                     player.rect.topleft = (1100, 295)
                 elif player.ultima_direcao == "direita":
                     player.rect.topleft = (0, 295)
@@ -61,6 +67,9 @@ class Cenario():
         self.teclas = pygame.key.get_pressed()
         self.colidiu = self.player.update(self.teclas)
         self.items = pygame.sprite.Group()
+        self.porta = pygame.Rect(0,0,0,0)
+        self.entrar_sala = False
+        self.entrar = font.render("Pressione 'E' para entrar na porta", True, WHITE)
         self.pegar = font.render("Pressione 'P' para pegar o item", True, WHITE)
         
     def desenhar(self):
@@ -80,9 +89,16 @@ class Cenario():
             if self.player.rect.colliderect(item.rect) and not item.coletado:
                 self.tela.blit(self.pegar, (20, 20))
                 if self.teclas[pygame.K_p]:
+                    pegar_item_som.play()
                     self.player.coletando()
                     lista_itens.append(item)
                     item.coletado = True
+        
+        if self.player.rect.colliderect(self.porta):
+            self.tela.blit(self.entrar, (20,20))
+            if self.teclas[pygame.K_e]:
+                self.entrar_sala = True
+                return self.mudar_tela()
         
         self.items.draw(self.tela)
         for item in lista_itens:
@@ -90,7 +106,10 @@ class Cenario():
         self.player_andar.draw(self.tela)
         
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return None
+        elif self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
@@ -104,11 +123,14 @@ class CorredorA36(Cenario):
         self.porta = pygame.Rect(540,200,180,340)
     
     def mudar_tela(self):
-        if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return SalaA36()
+        elif self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return CorredorA38()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return CorredorA30()
-
+        
 class CorredorA38(Cenario):
     def __init__(self):
         super().__init__()
@@ -136,12 +158,17 @@ class SalaA36(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "SalaA36.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.player.ultima_direcao = "direita"
+        self.player.animacao_atual = self.player.andar_direita
+        self.player.image = self.player.andar_direita[int(self.player.atual)]
+        self.player.image = pygame.transform.scale(self.player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        
         if fita not in self.items:
             self.items.add(fita)
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
+            player.rect.topleft = (600, 350)
             return CorredorA36()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
