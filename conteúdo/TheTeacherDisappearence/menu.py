@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+from ui.sounds import Musica, Som
 from player import Player
 from main import Game, CorredorA36
 
@@ -13,6 +14,9 @@ BLACK = (0, 0, 0)
 BOX = (84, 66, 33)
 BORDER = (49, 38, 19)
 HIGHLIGHT = (128, 0, 32)
+
+musica = Musica("Iron wasteland.mp3")
+musica.play()
 
 pygame.init()
 pygame.display.set_caption("The Teacher Disappearence")
@@ -156,6 +160,7 @@ class História:
                                 pygame.quit()
                                 sys.exit()
                             if teclas[pygame.K_SPACE]:
+                                musica.parar()
                                 Game(cenario=CorredorA36()).run()
                                 
                         text_final +=s 
@@ -195,6 +200,7 @@ class História:
                 if event.type == pygame.QUIT:
                     running = False
                 if self.running == False:
+                    musica.parar()
                     Game(cenario=CorredorA36()).run()
             
             clock.tick(FPS)
