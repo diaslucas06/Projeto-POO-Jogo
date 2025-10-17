@@ -3,33 +3,43 @@ from pygame.locals import *
 from player import Player
 from items.keys import Key1, Key2, Fita
 from ui.sounds import Musica, Som
-from ui.hud import Inventario
+from ui.hud import Inventario, Hud
+from characters.base import Hugo
 import os
 
 pygame.init()
 
-PLAYER_LARGURA = 170
-PLAYER_ALTURA = 300
-
+#valores
 LARGURA = 1280
 ALTURA = 720
 FPS = 30
 
+#cores
 WHITE = (255, 255, 255)
 
+#itens
 chave = Key1(300, 520)
 chave_m5 = Key2(300, 520)
 fita = Fita(500, 530)
-player = Player()
-
-inventario = Inventario()
 lista_itens = []
 
+#player
+PLAYER_LARGURA = 170
+PLAYER_ALTURA = 300
+player = Player()
+
+#hud
+inventario = Inventario()
+hud = Hud()
+
+#sons
 pegar_item_som = Som("smw_stomp.mp3")
 abrir_porta_som = Som("smw_door_opens.wav")
 
-font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "data", "fonts", "Minecraftia-Regular.ttf"), 20)
 sair_sala = False
+
+#personagens
+hugo = Hugo()
 
 class Game():
     def __init__(self, cenario):
@@ -39,6 +49,7 @@ class Game():
         self.cenario = cenario
         musica = Musica("Robert Blumenau - Suspense.mp3")
         musica.play()
+        pygame.mixer.music.set_volume(0.05)
 
     def run(self):
     
@@ -71,13 +82,7 @@ class Cenario():
         self.items = pygame.sprite.Group()
         self.porta = pygame.Rect(0,0,0,0)
         self.entrar_sala = False
-        self.entrar = font.render("Pressione 'E' para entrar na porta", True, WHITE)
-        self.pegar = font.render("Pressione 'P' para pegar o item", True, WHITE)
-        self.tecla_p = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "teclas", "tecla_p.png"))
-        self.tecla_p = pygame.transform.scale(self.tecla_p, (30, 30))
-        self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "teclas", "tecla_e.png"))
-        self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
-        
+        self.character = pygame.Rect(0,0,0,0)
         
     def desenhar(self):
         
@@ -86,16 +91,18 @@ class Cenario():
         self.teclas = pygame.key.get_pressed()
                             
         colidiu = self.player.update(self.teclas)
+        
         if colidiu:
             return self.mudar_tela()
+        
         self.items.update(inventario)            
         self.tela.blit(self.fundo, (0,0))
         self.tela.blit(inventario.image, (300,610))
         
         for item in self.items:
             if self.player.rect.colliderect(item.rect) and not item.coletado:
-                self.tela.blit(self.pegar, (60, 20))
-                self.tela.blit(self.tecla_p, (20, 20))
+                self.tela.blit(hud.pegar, (60, 20))
+                self.tela.blit(hud.tecla_p, (20, 20))
                 if self.teclas[pygame.K_p]:
                     pegar_item_som.play()
                     self.player.coletando()
@@ -103,18 +110,26 @@ class Cenario():
                     item.coletado = True
         
         if self.player.rect.colliderect(self.porta):
-            self.tela.blit(self.entrar, (60,20))
-            self.tela.blit(self.tecla_e, (20, 20))
+            self.tela.blit(hud.entrar, (60,20))
+            self.tela.blit(hud.tecla_e, (20, 20))
             if self.teclas[pygame.K_e]:
                 self.entrar_sala = True
                 abrir_porta_som.play()
                 return self.mudar_tela()
+            
+        if self.player.rect.colliderect(self.character):
+            self.tela.blit(hud.interagir, (60,20))
+            self.tela.blit(hud.tecla_i, (20, 20))
+            
         if player.saindo_porta:
             player.saindo_porta = False
             player.rect.topleft = (self.porta.left, 295)
+            
         self.items.draw(self.tela)
+        
         for item in lista_itens:
             self.tela.blit(item.image, item.rect.topleft)
+            
         self.player_andar.draw(self.tela)
         
     def mudar_tela(self):
@@ -223,18 +238,23 @@ class LabM5(Cenario):
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return SalaA36()
         
-class LabM6(Cenario):
+class LabM1(Cenario):
     
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM6.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.character = hugo
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
             return None
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return None
+        
+    def desenhar(self):
+        super().desenhar()
+        self.tela.blit(self.character.image, (120, 245))
         
 class CorredorA42(Cenario):
     
@@ -245,7 +265,7 @@ class CorredorA42(Cenario):
         
     def mudar_tela(self):
         if self.player.ultima_direcao == "esquerda" and self.player.rect.left <= 0:
-            return None
+            return LabM1()
         elif self.player.ultima_direcao == "direita" and self.player.rect.right >= LARGURA:
             return CorredorA38()
         
