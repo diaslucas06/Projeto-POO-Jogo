@@ -28,4 +28,12 @@ class Hud():
         self.tecla_i = pygame.transform.scale(self.tecla_i, (30, 30))
         self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_e.png"))
         self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
+
+class Seta():
+
+    def __init__(self):
+        self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "seta.png"))
+        self.image = pygame.transform.scale(self.image, (70, 70))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = 200, 620
         
