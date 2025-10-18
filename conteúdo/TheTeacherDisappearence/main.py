@@ -332,11 +332,7 @@ class CorredorM5(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM5.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         self.porta = pygame.Rect(600,200,180,340)
-        self.player.ultima_direcao = "direita"
-        self.player.animacao_atual = self.player.andar_direita
-        self.player.image = self.player.andar_direita[int(self.player.atual)]
-        self.player.image = pygame.transform.scale(self.player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-        
+
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = False
