@@ -22,6 +22,7 @@ class Hud():
         self.entrar = self.font.render("Pressione 'E' para entrar na porta", True, WHITE)
         self.interagir = self.font.render("Pressione 'I' para interagir com o personagem", True, WHITE)
         self.pegar = self.font.render("Pressione 'P' para pegar o item", True, WHITE)
+        self.clicar = self.font.render("Pressione o botão esquerdo do mouse para trocar de corredor", True, WHITE)
         self.tecla_p = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_p.png"))
         self.tecla_p = pygame.transform.scale(self.tecla_p, (30, 30))
         self.tecla_i = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_i.png"))
@@ -29,11 +30,14 @@ class Hud():
         self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_e.png"))
         self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
 
-class Seta():
+class Seta(pygame.sprite.Sprite):
 
     def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "seta.png"))
         self.image = pygame.transform.scale(self.image, (70, 70))
+        self.clicado = False
         self.rect = self.image.get_rect()
         self.rect.topleft = 200, 620
+        
         

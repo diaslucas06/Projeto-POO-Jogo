@@ -6,7 +6,7 @@ class Base_Personagem(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(self.caminho)
-        self.image = pygame.transform.scale(self.image, (180, 350))
+        self.image = pygame.transform.scale(self.image, (150, 350))
         self.rect = self.image.get_rect()
         
     def falar(self):

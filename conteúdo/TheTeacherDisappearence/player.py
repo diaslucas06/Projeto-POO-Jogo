@@ -34,6 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.andar = False
         self.coletar = False
         self.saindo_porta = False
+        self.voltando_seta = False
         
         self.velocidade = 8
         
