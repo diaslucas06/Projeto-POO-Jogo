@@ -1,9 +1,10 @@
 import pygame
 import os
 import sys
-from ui.sounds import Musica, Som
+from ui.sounds import Musica
 from player import Player
-from main import Game, CorredorA36
+from main import Game
+from cenarios import CorredorA36
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
