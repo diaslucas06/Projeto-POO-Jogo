@@ -17,7 +17,12 @@ ALTURA = 720
 #hud
 inventario = Inventario()
 hud = Hud()
-seta1 = Seta()
+seta1 = Seta(40, 450, "CorredorM1")
+seta2 = Seta(40, 450, "Área Externa")
+seta3 = Seta(40, 450, "CorredorM4")
+seta4 = Seta(40, 450, "CorredorM5")
+seta5 = Seta(40, 450, "CorredorM6")
+seta6 = Seta(40, 450, "CorredorM1")
 
 #sons
 pegar_item_som = Som("smw_stomp.mp3")
@@ -116,18 +121,20 @@ class Cenario():
         for seta in self.setas:
             #desenhando seta
             self.tela.blit(seta.image, seta.rect)
-            mouse_pos = pygame.mouse.get_pos()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                elif seta.rect.collidepoint(mouse_pos):
-                    self.tela.blit(hud.clicar, (20, 20))
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        seta.clicado = True
+            if player.rect.colliderect(seta.rect):
+                self.tela.blit(hud.clicar, (20, 20))
+                if self.teclas[pygame.K_s]:
+                    seta.clicado = True
+                    if seta.destino == "CorredorM1":
                         return CorredorM1()
-                else:
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                    elif seta.destino == "CorredorM4":
+                        return CorredorM4() 
+                    elif seta.destino == "CorredorM6":
+                        return CorredorM6() 
+                    elif seta.destino == "CorredorM5":
+                        return CorredorM5() 
+                    elif seta.destino == "Área Externa":
+                        return Arquibancadas() 
         
         #desenhando itens no inventário
         for item in lista_itens:
@@ -212,6 +219,36 @@ class CorredorCOAPAC1(Cenario):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorA26()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return Arquibancadas()   
+        
+# Área externa - Testes
+class Arquibancadas(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorCOAPAC1()
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return Arquibancadas2()   
+        
+class Arquibancadas2(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada2.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.nova_area = None #Onde o player vai entrar no centro
+        if seta2 not in self.setas:
+            self.setas.add(seta2)
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return Arquibancadas()
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return None   
         
 class CorredorA42(Cenario):
@@ -220,9 +257,8 @@ class CorredorA42(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA42.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.seta = seta1
-        if self.seta not in self.setas:
-            self.setas.add(self.seta)
+        if seta1 not in self.setas:
+            self.setas.add(seta1)
         if player.voltando_seta:
             player.voltando_seta = False
             player.ultima_direcao = "direita"
@@ -244,6 +280,8 @@ class CorredorM1(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM1.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         self.porta = pygame.Rect(900,200,100,340)
+        if seta3 not in self.setas:
+            self.setas.add(seta3)
         if seta1.clicado:
             seta1.clicado = False
             player.ultima_direcao = "direita"
@@ -261,6 +299,56 @@ class CorredorM1(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return CorredorM5()
         
+class CorredorM4(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM4.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.porta = pygame.Rect(300,200,100,340)
+        if seta6 not in self.setas:
+            self.setas.add(seta6)
+        if seta3.clicado:
+            seta3.clicado = False
+            player.ultima_direcao = "esquerda"
+            player.animacao_atual = player.andar_esquerda
+            player.image = player.andar_esquerda[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def mudar_tela(self):
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return None
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorM6()     
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return None       
+        
+class CorredorM6(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM6.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.porta = pygame.Rect(300,200,100,340)
+        if seta4 not in self.setas:
+            self.setas.add(seta4)
+        if seta5.clicado:
+            seta5.clicado = False
+            player.ultima_direcao = "esquerda"
+            player.animacao_atual = player.andar_esquerda
+            player.image = player.andar_esquerda[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def mudar_tela(self):
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return None
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return CorredorM4()      
+        
 class CorredorM5(Cenario):
     
     def __init__(self):
@@ -268,6 +356,14 @@ class CorredorM5(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM5.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         self.porta = pygame.Rect(300,200,100,340)
+        if seta5 not in self.setas:
+            self.setas.add(seta5)
+        if seta4.clicado:
+            seta4.clicado = False
+            player.ultima_direcao = "direita"
+            player.animacao_atual = player.andar_direita
+            player.image = player.andar_direita[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
 
     def mudar_tela(self):
         if self.entrar_sala:
