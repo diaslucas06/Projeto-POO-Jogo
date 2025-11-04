@@ -26,9 +26,6 @@
 #Você voltou! Isso é... impressionante. Confesso que achei que você não fosse conseguir.
 
 #ALuna:
-#Consegui. O código estava escondido entre vários arquivos antigos. Parecia uma armadilha, mas eu consegui acessar o terminal.
-
-#ALuna:
 #Agora o senhor pode cumprir a promessa. O que mais sabe sobre o que aconteceu com a professora Maíra?
 
 #Hugo:
