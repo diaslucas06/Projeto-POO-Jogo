@@ -1,5 +1,28 @@
+#Diálogo da personagem com o Zelador: 
+
+#Zelador:
+ #Ei! você não devia estar aqui hoje. O campus está praticamente fechado.
+#Aluna:
+ #Desculpa, eu só… preciso pegar umas coisas que deixei pelo campus. Não vou demorar.
+#Zelador:
+ #Olha… não quero me meter na sua vida. Mas as coisas andam meio complicadas por aqui. Então tome cuidado.
+#Aluna:
+ #Obrigada, vou tomar cuidado e ser rápida.
+#Zelador:
+ #Então vai rápido. E evita falar que eu te vi, tá? A supervisão tá pegando no pé de todo mundo.
+#(Neste momento, o Zelador sai e a fita vermelha caí. O persoagem pega e vai para o destino, lab de maira).
+
+
 #Primeiro Diálogo da Personagem com Hugo:
 
+#Aluna:
+ #“Hugo! Que bom encontrar algum rosto conhecido por aqui.”
+#Hugo:
+ #“O que faz aqui a essa hora? Esse laboratório devia estar trancado.”
+#Aluna:
+ #“Calma, estou apenas em busca de pistas. O senhor sabe o que aconteceu com a professora Maíra?”
+#Hugo:
+ #“Não fale esse nome em voz alta. Desde o que aconteceu... as pessoas evitam comentar. Há câmeras, microfones... não dá pra confiar em nada aqui dentro.”
 #Aluna:
  #“O senhor parece assustado. O que realmente está acontecendo? Ela desapareceu mesmo dentro do campus?”
 #Hugo:
