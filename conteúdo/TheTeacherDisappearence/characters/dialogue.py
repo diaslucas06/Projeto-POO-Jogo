@@ -79,3 +79,100 @@
 
 #Hugo:
 #Agora vá, antes que alguém perceba que voltou. E lembre-se, nem tudo aqui é o que parece. 
+
+import pygame
+import os
+
+LARGURA_TELA = 1280
+ALTURA_TELA = 720 
+FPS = 60
+
+BOX = (84, 66, 33)
+BORDER = (49, 38, 19)
+WHITE = (255, 255, 255)
+font = pygame.font.Font(os.path.join(os.path.dirname(__file__), "..", "data", "fonts", "Minecraftia-Regular.ttf"), 28)
+
+class Dialogo():
+    def __init__(self, cenario):
+        self.running = True
+        self.dialog_text = None
+        self.text_view = False
+        self.y = 0
+        self.cenario = cenario
+        self.largura_dialogo = 900
+        self.altura_dialogo = 190
+        
+    def run(self):
+        
+        if self.text_view == False:
+            
+            self.tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+            self.fundo_congelado = self.cenario.tela.copy()
+            x = (LARGURA_TELA - self.largura_dialogo) // 2
+            y = (ALTURA_TELA - self.altura_dialogo) // 2 + 200 
+            dialog_rect = pygame.Rect(x, y, self.largura_dialogo, self.altura_dialogo)    
+            i = 0
+            
+            for bloco in self.dialog_text:
+                
+                self.y = 0
+                self.tela.blit(self.fundo_congelado, (0, 0))
+                pygame.draw.rect(self.cenario.tela, BOX, dialog_rect)
+                pygame.draw.rect(self.cenario.tela, BORDER, dialog_rect, 5)
+                
+                for line in bloco:
+                    
+                    text_final = ""
+                    x_position = x + 20
+                    y_position = y + 20
+                    
+                    for s in line:
+                                
+                        text_final +=s 
+                        text_surface = font.render(text_final, True, WHITE)
+                        self.tela.blit(text_surface, (x_position, y_position + self.y))
+                        pygame.display.flip()
+                        pygame.time.Clock().tick(30)
+                        
+                    self.y += 35 
+                    pygame.display.update()
+                    
+                i += 1
+                pausa = True
+                pausa_tempo = 1500 
+                inicio_pausa = pygame.time.get_ticks()
+                
+                while pausa:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                           
+                    agora = pygame.time.get_ticks()
+                    if agora - inicio_pausa >= pausa_tempo:
+                        pausa = False
+                    pygame.time.Clock().tick(FPS)
+
+            self.text_view = True
+            self.running = False
+            
+class Dialogo_Hugo1(Dialogo):
+    def __init__(self, cenario):
+        super().__init__(cenario)
+        self.dialog_text = [
+            ["Aluna", "Hugo! Que bom encontrar algum rosto conhecido", "por aqui."],
+            ["Hugo", "O que faz aqui a essa hora? Esse laboratório devia", "estar trancado."],
+            ["Aluna", "Calma, estou apenas em busca de pistas. O senhor", "sabe o que aconteceu com a professora Maíra?"],
+            ["Hugo", "Não fale esse nome em voz alta. Desde o que", "aconteceu... as pessoas evitam comentar. Há câ-", "meras, microfones..."],
+            ["Hugo", "Não dá pra confiar em nada aqui dentro."],
+            ["Aluna","O senhor parece assustado. O que realmente está", "acontecendo? Ela desapareceu mesmo dentro do", "campus?"],
+            ["Hugo", "Sim, ou pelo menos é o que dizem. A última vez", "que a vi foi... deixa eu lembrar... quinta-feira,", "por volta das sete da noite. Ela saiu apressada,"],
+            ["Hugo", "com alguns arquivos no pendrive. Depois disso,", "sumiu."],
+            ["Aluna","Sete da noite... quinta-feira... isso foi antes", "da queda de energia, não foi? Isso tem alguma", "ligação?"],
+            ["Hugo", "Talvez tenha. Mas eu não posso dizer mais nada...", "é perigoso. Já falei demais."],
+            ["Aluna","Se eu não entender o que está acontecendo,", "ninguém vai. Eu preciso de alguma pista."],
+            ["Hugo", "Certo, se quer respostas, vai ter que provar que", "pode lidar com elas. Vá até o Laboratório M6."],
+            ["Hugo", "Há um sistema antigo lá, algo que só quem decifra", "é quem é digno de alguma pista."],
+            ["Hugo", "Lá dentro há um terminal de segurança. Se conse-", "guir resolver o código travado nele... eu te direi", "o resto. Só tenha cuidado!"],
+            ["Aluna","Entendido. Vou até o M6 e volto assim que", "decifrar o código."],
+            ["Hugo", "Rápido. E... não diga a ninguém que conversou", "comigo. Eu não quero ser o próximo a desaparecer."]
+        ]

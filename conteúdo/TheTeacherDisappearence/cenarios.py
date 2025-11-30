@@ -5,6 +5,7 @@ from characters.base import Hugo
 from ui.sounds import Som
 import os
 from main import player
+from characters.dialogue import Dialogo_Hugo1
 
 #player
 PLAYER_LARGURA = 170
@@ -116,6 +117,10 @@ class Cenario():
                 #mensagem ao colidir
                 self.tela.blit(hud.interagir, (60,20))
                 self.tela.blit(hud.tecla_i, (20, 20))
+                if self.teclas[pygame.K_i]:
+                    dialogo = Dialogo_Hugo1(cenario=Cenario())
+                    dialogo.run()
+                    pygame.display.update()
             self.tela.blit(character.image, (120, 245))
             
         for seta in self.setas:
