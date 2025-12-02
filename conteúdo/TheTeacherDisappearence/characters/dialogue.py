@@ -99,31 +99,37 @@ class Dialogo():
         self.text_view = False
         self.y = 0
         self.cenario = cenario
-        self.largura_dialogo = 900
+        self.tela = self.cenario.tela
+        self.largura_dialogo = 1000
         self.altura_dialogo = 190
         
     def run(self):
         
         if self.text_view == False:
             
-            self.tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-            self.fundo_congelado = self.cenario.tela.copy()
             x = (LARGURA_TELA - self.largura_dialogo) // 2
-            y = (ALTURA_TELA - self.altura_dialogo) // 2 + 200 
+            y = (ALTURA_TELA - self.altura_dialogo) // 2 + 250 
             dialog_rect = pygame.Rect(x, y, self.largura_dialogo, self.altura_dialogo)    
             i = 0
             
             for bloco in self.dialog_text:
                 
+                if "Aluna" in bloco: #cor muda baseado em quem está falando
+                    BOX = (0, 100, 0)
+                    BORDER = (0, 50, 0)
+                else:
+                    BOX = (0, 0, 100)
+                    BORDER = (0, 0, 50)
+                        
                 self.y = 0
-                self.tela.blit(self.fundo_congelado, (0, 0))
-                pygame.draw.rect(self.cenario.tela, BOX, dialog_rect)
-                pygame.draw.rect(self.cenario.tela, BORDER, dialog_rect, 5)
+                self.tela.blit(self.cenario.fundo_salvo, (0, 0))
+                pygame.draw.rect(self.tela, BOX, dialog_rect)
+                pygame.draw.rect(self.tela, BORDER, dialog_rect, 5)
                 
                 for line in bloco:
                     
                     text_final = ""
-                    x_position = x + 20
+                    x_position = x + 50
                     y_position = y + 20
                     
                     for s in line:
@@ -167,12 +173,12 @@ class Dialogo_Hugo1(Dialogo):
             ["Aluna","O senhor parece assustado. O que realmente está", "acontecendo? Ela desapareceu mesmo dentro do", "campus?"],
             ["Hugo", "Sim, ou pelo menos é o que dizem. A última vez", "que a vi foi... deixa eu lembrar... quinta-feira,", "por volta das sete da noite. Ela saiu apressada,"],
             ["Hugo", "com alguns arquivos no pendrive. Depois disso,", "sumiu."],
-            ["Aluna","Sete da noite... quinta-feira... isso foi antes", "da queda de energia, não foi? Isso tem alguma", "ligação?"],
+            ["Aluna", "Sete da noite... quinta-feira... isso foi antes", "da queda de energia, não foi? Isso tem alguma", "ligação?"],
             ["Hugo", "Talvez tenha. Mas eu não posso dizer mais nada...", "é perigoso. Já falei demais."],
-            ["Aluna","Se eu não entender o que está acontecendo,", "ninguém vai. Eu preciso de alguma pista."],
+            ["Aluna", "Se eu não entender o que está acontecendo,", "ninguém vai. Eu preciso de alguma pista."],
             ["Hugo", "Certo, se quer respostas, vai ter que provar que", "pode lidar com elas. Vá até o Laboratório M6."],
             ["Hugo", "Há um sistema antigo lá, algo que só quem decifra", "é quem é digno de alguma pista."],
             ["Hugo", "Lá dentro há um terminal de segurança. Se conse-", "guir resolver o código travado nele... eu te direi", "o resto. Só tenha cuidado!"],
-            ["Aluna","Entendido. Vou até o M6 e volto assim que", "decifrar o código."],
+            ["Aluna", "Entendido. Vou até o M6 e volto assim que", "decifrar o código."],
             ["Hugo", "Rápido. E... não diga a ninguém que conversou", "comigo. Eu não quero ser o próximo a desaparecer."]
         ]

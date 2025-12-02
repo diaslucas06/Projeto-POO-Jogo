@@ -63,6 +63,9 @@ class Cenario():
         
         self.seta = None
         self.entrar_sala = False
+        self.rect_fundo = None 
+        self.fundo_salvo = None
+        self.dialogo = None
         
     def desenhar(self):
         
@@ -110,26 +113,22 @@ class Cenario():
             
         #desenhando itens
         self.items.draw(self.tela)
-        
-        #desenhando os personagens
-        for character in self.characters:
-            if player.rect.colliderect(character):
-                #mensagem ao colidir
-                self.tela.blit(hud.interagir, (60,20))
-                self.tela.blit(hud.tecla_i, (20, 20))
-                if self.teclas[pygame.K_i]:
-                    dialogo = Dialogo_Hugo1(cenario=Cenario())
-                    dialogo.run()
-                    pygame.display.update()
-            self.tela.blit(character.image, (120, 245))
             
         for seta in self.setas:
             #desenhando seta
+            seta.clicado = False
             self.tela.blit(seta.image, seta.rect)
             if player.rect.colliderect(seta.rect):
                 self.tela.blit(hud.clicar, (20, 20))
-                if self.teclas[pygame.K_s]:
-                    seta.clicado = True
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        
+                    elif event.type == pygame.KEYDOWN: 
+                        if event.key == pygame.K_s:
+                            seta.clicado = True
+                
+                if seta.clicado == True:
                     if seta.destino == "CorredorM1":
                         return CorredorM1()
                     elif seta.destino == "CorredorM4":
@@ -147,6 +146,19 @@ class Cenario():
             
         #desenhando o player
         self.player_andar.draw(self.tela)
+        
+        #desenhando os personagens
+        for character in self.characters:
+            self.tela.blit(character.image, (120, 245))
+            alcance_interacao = character.rect.inflate(300, 300)
+            if player.rect.colliderect(alcance_interacao):
+                #mensagem ao colidir
+                self.tela.blit(hud.interagir, (60,20))
+                self.tela.blit(hud.tecla_i, (20, 20))
+                if self.teclas[pygame.K_i]:
+                    self.rect_fundo = self.tela.get_rect()
+                    self.fundo_salvo = self.tela.copy()
+                    self.dialogo.run()
         
     def mudar_tela(self):
         if self.entrar_sala:
@@ -447,6 +459,7 @@ class LabM1(Cenario):
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        self.dialogo = Dialogo_Hugo1(cenario=self)
         
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
