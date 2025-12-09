@@ -10,11 +10,10 @@ class Item(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = x, y
         self.coletado = False
+        self.utilizado = False
         
-    def update(self, inventario):
+    def update(self):
         if self.coletado:
-            inventario.i = inventario.i + 50
-            self.rect.topleft = inventario.i, 635
             self.coletado = False
             
 class Key1(Item):

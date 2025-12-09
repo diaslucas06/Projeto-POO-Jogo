@@ -4,7 +4,7 @@ import sys
 from ui.sounds import Musica
 from player import Player
 from main import Game
-from cenarios import CorredorA36, hud
+from cenarios import CorredorA36
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
@@ -140,7 +140,9 @@ class História:
                 self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
                 self.screen.blit(self.fundo, (0,0))
                 self.screen.blit(self.aviso, (100,20))
-                self.screen.blit(hud.space, (20, 20))
+                self.space = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "teclas", "space.png"))
+                self.space = pygame.transform.scale(self.space, (60, 30))
+                self.screen.blit(self.space, (20, 20))
                 
                 if "biblioteca-ifrn.png" in self.caminho:
                     self.player.rect.topleft = 30, 400

@@ -55,11 +55,12 @@ class Cenario():
         
         self.colidiu = player.update(self.teclas)
         
-        self.items = pygame.sprite.Group()
+        self.items = inventario.items
         self.characters = pygame.sprite.Group()
         self.setas = pygame.sprite.Group()
         
         self.porta = pygame.Rect(0,0,0,0)
+        self.trancada = False
         
         self.seta = None
         self.entrar_sala = False
@@ -79,7 +80,8 @@ class Cenario():
         if colidiu:
             return self.mudar_tela()
         
-        self.items.update(inventario)    
+        self.items.update()    
+
         #desenhando o fundo        
         self.tela.blit(self.fundo, (0,0))
         #desenhando o inventário
@@ -96,6 +98,10 @@ class Cenario():
                     player.coletando()
                     lista_itens.append(item)
                     item.coletado = True
+                    for indice, item in enumerate(lista_itens):
+                        nova_posicao_x = inventario.posicao_base_x + (indice * inventario.espacamento_entre_itens)
+                        item.rect.topleft = (nova_posicao_x, inventario.posicao_y)
+                        self.tela.blit(item.image, item.rect.topleft)
         
         #colisão com a porta para entrar em salas/laboratórios
         if player.rect.colliderect(self.porta):
@@ -103,9 +109,19 @@ class Cenario():
             self.tela.blit(hud.entrar, (60,20))
             self.tela.blit(hud.tecla_e, (20, 20))
             if self.teclas[pygame.K_e]:
-                self.entrar_sala = True
-                abrir_porta_som.play()
-                return self.mudar_tela()
+                if self.trancada == False:
+                    self.entrar_sala = True
+                    abrir_porta_som.play()
+                    return self.mudar_tela()
+                else:
+                    if chave in lista_itens:
+                        self.entrar_sala = True
+                        abrir_porta_som.play()
+                        self.trancada = False
+                        chave.utilizado = True
+                        lista_itens.remove(chave)
+                        self.items.remove(chave)
+                        return self.mudar_tela()
             
         if player.saindo_porta:
             player.saindo_porta = False
@@ -113,6 +129,7 @@ class Cenario():
             
         #desenhando itens
         self.items.draw(self.tela)
+        inventario.update()
             
         for seta in self.setas:
             #desenhando seta
@@ -173,8 +190,12 @@ class CorredorA36(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
-        if chave not in self.items:
-            self.items.add(chave)
+        if not chave.utilizado:
+            self.trancada = True
+            if chave not in self.items:
+                self.items.add(chave)
+        else:
+            self.trancada = False
         self.porta = pygame.Rect(550,200,100,340)
     
     def mudar_tela(self):

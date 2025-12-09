@@ -12,8 +12,17 @@ class Inventario():
     def __init__(self):
         self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "inventario.png"))
         self.image = pygame.transform.scale(self.image, (INVENTARIO_LARGURA, INVENTARIO_ALTURA))
-        self.items = []
-        self.i = 280
+        self.items = pygame.sprite.Group()
+        self.posicao_base_x = 340
+        self.posicao_y = 635
+        self.espacamento_entre_itens = 70
+        
+    def update(self):
+        for item in self.items:
+            if item.utilizado:
+                self.items.update(self)
+                item.kill()
+    
         
 class Hud():
     
