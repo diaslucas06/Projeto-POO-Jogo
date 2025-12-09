@@ -29,6 +29,8 @@ class Hud():
         self.tecla_i = pygame.transform.scale(self.tecla_i, (30, 30))
         self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_e.png"))
         self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
+        self.space = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "space.png"))
+        self.space = pygame.transform.scale(self.space, (60, 30))
 
 class Seta(pygame.sprite.Sprite):
 

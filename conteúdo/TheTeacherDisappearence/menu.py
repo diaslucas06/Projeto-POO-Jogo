@@ -4,7 +4,7 @@ import sys
 from ui.sounds import Musica
 from player import Player
 from main import Game
-from cenarios import CorredorA36
+from cenarios import CorredorA36, hud
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
@@ -109,7 +109,8 @@ class História:
         self.player_andar = pygame.sprite.Group()
         self.player = Player()
         self.player_andar.add(self.player)
-        self.aviso = font_aviso.render("ESPAÇO - pular toda a história", True, WHITE)
+        self.aviso = font_aviso.render("ESPAÇO - adiantar a história", True, WHITE)
+        self.acelerado = False
         
     def run(self):
         
@@ -138,7 +139,8 @@ class História:
                 self.fundo = pygame.image.load(self.caminho).convert()
                 self.fundo = pygame.transform.scale(self.fundo, (LARGURA_TELA, ALTURA_TELA))
                 self.screen.blit(self.fundo, (0,0))
-                self.screen.blit(self.aviso, (20,20))
+                self.screen.blit(self.aviso, (100,20))
+                self.screen.blit(hud.space, (20, 20))
                 
                 if "biblioteca-ifrn.png" in self.caminho:
                     self.player.rect.topleft = 30, 400
@@ -161,14 +163,16 @@ class História:
                                 pygame.quit()
                                 sys.exit()
                             if teclas[pygame.K_SPACE]:
-                                musica.parar()
-                                Game(cenario=CorredorA36()).run()
+                                self.acelerado = True
                                 
                         text_final +=s 
                         text_surface = font.render(text_final, True, WHITE)
                         self.screen.blit(text_surface, (x_position, y_position + self.y))
                         pygame.display.flip()
-                        pygame.time.Clock().tick(30)
+                        if self.acelerado == True:
+                            pygame.time.Clock().tick(0)
+                        else:
+                            pygame.time.Clock().tick(30)
                         
                     self.y += 35 
                     pygame.display.update()
@@ -187,6 +191,8 @@ class História:
                     if agora - inicio_pausa >= pausa_tempo:
                         pausa = False
                     pygame.time.Clock().tick(FPS)
+                    
+                self.acelerado = False
 
             self.text_view = True
             self.running = False
