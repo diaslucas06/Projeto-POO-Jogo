@@ -270,6 +270,19 @@ class CorredorCOAPAC2(Cenario):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorCOAPAC1()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return CorredorCOAPAC3()    
+        
+class CorredorCOAPAC3(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac3.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorCOAPAC2()
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return Arquibancadas()    
         
 # Área externa - Testes
@@ -282,7 +295,7 @@ class Arquibancadas(Cenario):
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return CorredorCOAPAC2()
+            return CorredorCOAPAC3()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return Arquibancadas2()   
         
