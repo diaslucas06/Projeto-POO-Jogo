@@ -1,15 +1,17 @@
 import pygame
 from ui.hud import Inventario, Hud, Seta
-from items.keys import Key1, Key2, Fita
-from characters.base import Hugo
-from ui.sounds import Som
+from items.keys import Key1, Key2, Fita, Carrinho
+from characters.base import Hugo, Zelador
+from ui.sounds import Som, Musica
 import os
 from main import player
-from characters.dialogue import Dialogo_Hugo1
+from characters.dialogue import Dialogo_Hugo1, Dialogo_Zelador
 
 #player
 PLAYER_LARGURA = 170
 PLAYER_ALTURA = 300
+
+FPS = 60
 
 #valores
 LARGURA = 1280
@@ -33,6 +35,7 @@ abrir_porta_som = Som("smw_door_opens.wav")
 chave = Key1(300, 520)
 chave_m5 = Key2(300, 520)
 fita = Fita(500, 530)
+carrinho = Carrinho(0, 240)
 lista_itens = []
 
 #cores
@@ -40,6 +43,7 @@ WHITE = (255, 255, 255)
 
 #personagens
 hugo = Hugo()
+zelador = Zelador()
 
 sair_sala = False
 
@@ -55,11 +59,13 @@ class Cenario():
         
         self.colidiu = player.update(self.teclas)
         
-        self.items = inventario.items
+        self.items = pygame.sprite.Group()
         self.characters = pygame.sprite.Group()
         self.setas = pygame.sprite.Group()
         
         self.porta = pygame.Rect(0,0,0,0)
+        self.alarme = pygame.Rect(0,0,0,0)
+        self.alarme_ativado = False
         self.trancada = False
         
         self.seta = None
@@ -122,10 +128,26 @@ class Cenario():
                         lista_itens.remove(chave)
                         self.items.remove(chave)
                         return self.mudar_tela()
+                
+                
+        #Precisa consertar
+        if player.rect.colliderect(self.alarme):
+            if self.teclas[pygame.K_e]:
+                som_alarme = Musica("alarm.ogg")
+                som_alarme.play()
+                self.alarme_ativado = True
+                alarme_tempo = 20000 
+                inicio_alarme = pygame.time.get_ticks()
+                while self.alarme_ativado:
+                    agora = pygame.time.get_ticks()
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                    if agora - inicio_alarme >= alarme_tempo:
+                        self.alarme_ativado = False
+                        som_alarme.parar()
+                    pygame.time.Clock().tick(FPS)
             
-        if player.saindo_porta:
-            player.saindo_porta = False
-            player.rect.topleft = (self.porta.left, 295)
             
         #desenhando itens
         self.items.draw(self.tela)
@@ -212,6 +234,10 @@ class CorredorA38(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
         self.porta = pygame.Rect(640,200,100,340)
+        self.character = zelador
+        if self.character not in self.characters:
+            self.characters.add(self.character)
+        self.dialogo = Dialogo_Zelador(cenario=self)
             
     def mudar_tela(self):
         if self.entrar_sala:
@@ -265,6 +291,7 @@ class CorredorCOAPAC2(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac2.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.alarme = pygame.Rect(950,200,100,340)
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -278,6 +305,8 @@ class CorredorCOAPAC3(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac3.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if carrinho not in self.items:
+            self.items.add(carrinho)
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -330,6 +359,7 @@ class CorredorA42(Cenario):
             player.image = player.andar_direita[int(player.atual)]
             player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
             player.rect.left = 300
+        self.character = zelador
         
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:

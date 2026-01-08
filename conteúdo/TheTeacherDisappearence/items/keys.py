@@ -34,3 +34,10 @@ class Fita(Item):
         self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "fita.png")
         super().__init__(x, y)
         
+class Carrinho(Item):
+    
+    def __init__(self, x, y):
+        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "Carrinho_limpeza.png")
+        super().__init__(x, y)
+        self.image = pygame.transform.scale(self.image, (500, 400))
+        
