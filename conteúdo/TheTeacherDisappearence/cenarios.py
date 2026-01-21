@@ -1,6 +1,6 @@
 import pygame
 from ui.hud import Inventario, Hud, Seta
-from items.keys import Key1, Key2, Fita, Carrinho
+from items.keys import Key1, Key2, Key3, Key4, PenDrive, Fita, Carrinho
 from characters.base import Hugo, Zelador
 from ui.sounds import Som, Musica
 import os
@@ -34,8 +34,11 @@ abrir_porta_som = Som("smw_door_opens.wav")
 #itens
 chave = Key1(300, 520)
 chave_m5 = Key2(300, 520)
+chave_coapac = Key3(300, 520)
+chave_m1 = Key4(300, 520)
+pendrive = PenDrive(500, 520)
 fita = Fita(500, 530)
-carrinho = Carrinho(0, 240)
+carrinho = Carrinho(50, 330)
 lista_itens = []
 
 #cores
@@ -73,6 +76,8 @@ class Cenario():
         self.rect_fundo = None 
         self.fundo_salvo = None
         self.dialogo = None
+        
+        self.item_necessario = None
         
     def desenhar(self):
         
@@ -120,13 +125,17 @@ class Cenario():
                     abrir_porta_som.play()
                     return self.mudar_tela()
                 else:
-                    if chave in lista_itens:
+                    if self.item_necessario in lista_itens:
                         self.entrar_sala = True
                         abrir_porta_som.play()
                         self.trancada = False
-                        chave.utilizado = True
-                        lista_itens.remove(chave)
-                        self.items.remove(chave)
+        
+                        # Remover item usado
+                        item_usado = self.item_necessario
+                        item_usado.utilizado = True
+                        lista_itens.remove(item_usado)
+                        self.items.remove(item_usado)
+                        
                         return self.mudar_tela()
                 
                 
@@ -212,6 +221,7 @@ class CorredorA36(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA36.png")
+        self.item_necessario = chave
         if not chave.utilizado:
             self.trancada = True
             if chave not in self.items:
@@ -252,6 +262,8 @@ class CorredorA30(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA28.png")
+        self.porta = pygame.Rect(500,200,100,340)
+        self.trancada = True
         
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -307,6 +319,12 @@ class CorredorCOAPAC3(Cenario):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         if carrinho not in self.items:
             self.items.add(carrinho)
+        self.item_necessario = chave_coapac
+        if not chave_coapac.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
+        self.porta = pygame.Rect(1050,200,100,340)
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -360,6 +378,8 @@ class CorredorA42(Cenario):
             player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
             player.rect.left = 300
         self.character = zelador
+        if chave_coapac not in self.items:
+            self.items.add(chave_coapac)
         
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -374,6 +394,11 @@ class CorredorM1(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM1.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         self.porta = pygame.Rect(900,200,100,340)
+        self.item_necessario = chave_m1
+        if not chave_m1.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
         if seta3 not in self.setas:
             self.setas.add(seta3)
         if seta1.clicado:
@@ -399,7 +424,6 @@ class CorredorM4(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM4.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.porta = pygame.Rect(300,200,100,340)
         if seta6 not in self.setas:
             self.setas.add(seta6)
         if seta3.clicado:
@@ -424,7 +448,7 @@ class CorredorM6(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM6.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.porta = pygame.Rect(300,200,100,340)
+        self.porta = pygame.Rect(950,200,100,340)
         if seta4 not in self.setas:
             self.setas.add(seta4)
         if seta5.clicado:
@@ -449,6 +473,11 @@ class CorredorM5(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM5.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.item_necessario = chave_m5
+        if not chave_m5.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
         self.porta = pygame.Rect(300,200,100,340)
         if seta5 not in self.setas:
             self.setas.add(seta5)
@@ -514,6 +543,10 @@ class LabM5(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM5.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if chave_m1 not in self.items:
+            self.items.add(chave_m1)
+        if pendrive not in self.items:
+            self.items.add(pendrive)
         
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -531,6 +564,8 @@ class LabM1(Cenario):
         self.character = hugo
         if self.character not in self.characters:
             self.characters.add(self.character)
+        if chave_m1 not in self.items:
+            self.items.add(chave_m1)
             
         player.ultima_direcao = "esquerda"
         player.animacao_atual = player.andar_esquerda
