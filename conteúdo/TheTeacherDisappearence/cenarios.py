@@ -1,6 +1,6 @@
 import pygame
 from ui.hud import Inventario, Hud, Seta
-from items.keys import Key1, Key2, Key3, Key4, PenDrive, Fita, Carrinho
+from items.keys import Key1, Key2, Key3, Key4, CartaoAcesso, Fita, Carrinho, PéDeCabra
 from characters.base import Hugo, Zelador
 from ui.sounds import Som, Musica
 import os
@@ -32,13 +32,14 @@ pegar_item_som = Som("smw_stomp.mp3")
 abrir_porta_som = Som("smw_door_opens.wav")
 
 #itens
-chave = Key1(300, 520)
+chave = Key1(120, 300)
 chave_m5 = Key2(300, 520)
 chave_coapac = Key3(300, 520)
 chave_m1 = Key4(300, 520)
-pendrive = PenDrive(500, 520)
+cartao_acesso = CartaoAcesso(500, 540)
 fita = Fita(500, 530)
 carrinho = Carrinho(50, 330)
+pe_de_cabra = PéDeCabra(50, 430)
 lista_itens = []
 
 #cores
@@ -224,8 +225,8 @@ class CorredorA36(Cenario):
         self.item_necessario = chave
         if not chave.utilizado:
             self.trancada = True
-            if chave not in self.items:
-                self.items.add(chave)
+            if chave_coapac not in self.items:
+                self.items.add(chave_coapac)
         else:
             self.trancada = False
         self.porta = pygame.Rect(550,200,100,340)
@@ -257,11 +258,14 @@ class CorredorA38(Cenario):
             return CorredorA42()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorA36()
-        
+
+#consertar problema com o cartão reaparecendo
 class CorredorA30(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA28.png")
+        if cartao_acesso not in self.items:
+            self.items.add(cartao_acesso)
         self.porta = pygame.Rect(500,200,100,340)
         self.trancada = True
         
@@ -327,10 +331,54 @@ class CorredorCOAPAC3(Cenario):
         self.porta = pygame.Rect(1050,200,100,340)
 
     def mudar_tela(self):
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return COAPAC()
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorCOAPAC2()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
-            return Arquibancadas()    
+            return CorredorCOAPAC4()
+
+class CorredorCOAPAC4(Cenario):
+
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac4.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.item_necessario = cartao_acesso
+        if not cartao_acesso.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
+        self.porta = pygame.Rect(1100, 200, 100, 340)
+
+    def mudar_tela(self):
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return Diretoria()
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorCOAPAC3()
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return Arquibancadas()
+
+class Diretoria(Cenario):
+
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Diretoria.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if pe_de_cabra not in self.items:
+            self.items.add(pe_de_cabra)
+        player.ultima_direcao = "esquerda"
+        player.animacao_atual = player.andar_esquerda
+        player.image = player.andar_esquerda[int(player.atual)]
+        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorCOAPAC3()
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return Arquibancadas()
         
 # Área externa - Testes
 class Arquibancadas(Cenario):
@@ -579,4 +627,24 @@ class LabM1(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             player.saindo_porta = True
             return CorredorM1()
-        
+
+
+class COAPAC(Cenario):
+
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "COAPAC.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if chave not in self.items:
+            self.items.add(chave)
+        player.ultima_direcao = "direita"
+        player.animacao_atual = player.andar_direita
+        player.image = player.andar_direita[int(player.atual)]
+        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            player.saindo_porta = True
+            return CorredorCOAPAC3()
+        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+            return None
