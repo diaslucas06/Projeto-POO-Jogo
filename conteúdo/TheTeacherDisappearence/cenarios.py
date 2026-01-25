@@ -93,16 +93,12 @@ class Cenario():
             return self.mudar_tela()
        
         self.items.update()    
-
-        #desenhando o fundo         
+        
         self.tela.blit(self.fundo, (0,0))
-        #desenhando o inventário
         self.tela.blit(inventario.image, (300,610))
        
-        #pegar itens e colocá-los no inventário
         for item in self.items:
             if player.rect.colliderect(item.rect) and not item.coletado:
-                #mensagem ao colidir
                 self.tela.blit(hud.pegar, (60, 20))
                 self.tela.blit(hud.tecla_p, (20, 20))
                 if self.teclas[pygame.K_p]:
@@ -117,7 +113,6 @@ class Cenario():
        
         #colisão com a porta para entrar em salas/laboratórios
         if player.rect.colliderect(self.porta):
-            #mensagem ao colidir
             self.tela.blit(hud.entrar, (60,20))
             self.tela.blit(hud.tecla_e, (20, 20))
             if self.teclas[pygame.K_e]:
@@ -131,7 +126,6 @@ class Cenario():
                         abrir_porta_som.play()
                         self.trancada = False
        
-                        # Alteração: Marcar item como utilizado e remover
                         item_usado = self.item_necessario
                         item_usado.utilizado = True
                         item_usado.coletado = True # Garante que não reapareça
@@ -142,7 +136,6 @@ class Cenario():
                         return self.mudar_tela()
                
                
-        #Precisa consertar
         if player.rect.colliderect(self.alarme):
             if self.teclas[pygame.K_e]:
                 som_alarme = Musica("alarm.ogg")
@@ -166,7 +159,6 @@ class Cenario():
         inventario.update()
            
         for seta in self.setas:
-            #desenhando seta
             seta.clicado = False
             self.tela.blit(seta.image, seta.rect)
             if player.rect.colliderect(seta.rect):
@@ -195,15 +187,12 @@ class Cenario():
         for item in lista_itens:
             self.tela.blit(item.image, item.rect.topleft)
            
-        #desenhando o player
         self.player_andar.draw(self.tela)
        
-        #desenhando os personagens
         for character in self.characters:
             self.tela.blit(character.image, (120, 245))
             alcance_interacao = character.rect.inflate(300, 300)
             if player.rect.colliderect(alcance_interacao):
-                #mensagem ao colidir
                 self.tela.blit(hud.interagir, (60,20))
                 self.tela.blit(hud.tecla_i, (20, 20))
                 if self.teclas[pygame.K_i]:
@@ -612,24 +601,117 @@ class SalaA38(Cenario):
             return None
         
 class LabM5(Cenario):
-    
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM5.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
+        #Definimos o tamanho desejado da imagem da bolsa
+        tamanho = (140, 140) 
+        
+        pos_x = 1000 
+        pos_y = 390 
+        self.bolsa_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
+        
+        try:
+            caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "Bolsa_maíra.png")
+            self.imagem_bolsa = pygame.image.load(caminho_img).convert_alpha()
+            
+            self.imagem_bolsa = pygame.transform.scale(self.imagem_bolsa, tamanho)
+            
+        except:
+            self.imagem_bolsa = pygame.Surface(tamanho)
+            self.imagem_bolsa.fill((255, 0, 255))
+            print("Aviso: Imagem Bolsa_maíra.png não encontrada.")
+
         if not chave_m1.coletado:
             self.items.add(chave_m1)
             
         player.ultima_direcao = "direita"
         
+    def desenhar(self):
+        transicao = super().desenhar()
+        if transicao: return transicao
+
+        self.tela.blit(self.imagem_bolsa, (self.bolsa_objeto.x, self.bolsa_objeto.y))
+
+        #Colisão para abrir
+        if player.rect.colliderect(self.bolsa_objeto):
+            self.tela.blit(hud.abrir_bolsa, (60, 20)) 
+            self.tela.blit(hud.tecla_a, (20, 20))
+            
+            if self.teclas[pygame.K_a]:
+                return InteriorBolsa()
+        
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             player.saindo_porta = True
             return CorredorM5()
-        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return None
+        return None
+
+class InteriorBolsa(Cenario):
+    def __init__(self):
+        super().__init__()
+        #Recarrega a imagem do fundo (Garantindo que não fique preto)
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "dentro_bolsa.png")
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
         
+        #Posiciona a personagem (Tamanho normal e esquerda)
+        player.rect.x = 50 
+        player.rect.y = 450
+        player.ultima_direcao = "direita"
+        player.image = pygame.transform.scale(player.andar_direita[0], (PLAYER_LARGURA, PLAYER_ALTURA))
+
+        if not chave_m5.coletado:
+            if chave_m5 not in self.items:
+                self.items.add(chave_m5)
+            chave_m5.rect.topleft = (550, 350) 
+
+        if not fita.coletado: #ISSO impede a fita de reaparecer se já estiver no inventário
+            if fita not in self.items:
+                self.items.add(fita)
+            fita.rect.topleft = (650, 350)
+
+    def desenhar(self):
+        self.teclas = pygame.key.get_pressed()
+
+        self.tela.blit(self.image, (0, 0))
+        self.tela.blit(player.image, player.rect)
+        self.items.draw(self.tela)
+        
+        #HUD (Mensagens)
+        self.tela.blit(hud.font.render("ESC: Sair", True, (255, 255, 255)), (20, 20))
+        self.tela.blit(hud.tecla_p, (20, 60))
+        self.tela.blit(hud.pegar, (60, 60))
+
+        pos_y_barra = 610 
+        self.tela.blit(inventario.image, (inventario.posicao_base_x, pos_y_barra))
+        
+        for i, item in enumerate(lista_itens):
+            item_x = inventario.posicao_base_x + 20 + (i * inventario.espacamento_entre_itens)
+            item_y = pos_y_barra + 15
+            self.tela.blit(item.image, (item_x, item_y))
+
+        if self.teclas[pygame.K_p]:
+            for item in self.items.sprites():
+                item.coletado = True  
+                if item not in lista_itens:
+                    lista_itens.append(item)
+                item.kill()
+                
+                item.kill()           
+                self.items.remove(item) 
+
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if self.teclas[pygame.K_ESCAPE]:
+            player.rect.x = 900 
+            return LabM5()
+        return None
+    
 class LabM1(Cenario):
     
     def __init__(self):

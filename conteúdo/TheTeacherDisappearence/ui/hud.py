@@ -32,12 +32,23 @@ class Hud():
         self.interagir = self.font.render("Pressione 'I' para interagir com o personagem", True, WHITE)
         self.pegar = self.font.render("Pressione 'P' para pegar o item", True, WHITE)
         self.clicar = self.font.render("Pressione 'S' para mudar para o outro lado do corredor", True, WHITE)
+        self.abrir_bolsa = self.font.render("Pressione 'A' para abrir a bolsa", True, WHITE)
+
         self.tecla_p = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_p.png"))
         self.tecla_p = pygame.transform.scale(self.tecla_p, (30, 30))
+        
         self.tecla_i = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_i.png"))
         self.tecla_i = pygame.transform.scale(self.tecla_i, (30, 30))
+        
         self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_e.png"))
         self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
+
+        try:
+            self.tecla_a = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_a.png"))
+            self.tecla_a = pygame.transform.scale(self.tecla_a, (30, 30))
+        except:
+            self.tecla_a = self.tecla_e
+
         self.space = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "space.png"))
         self.space = pygame.transform.scale(self.space, (60, 30))
 
