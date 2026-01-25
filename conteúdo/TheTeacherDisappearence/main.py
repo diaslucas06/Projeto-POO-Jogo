@@ -30,6 +30,8 @@ class Game():
                     pygame.quit()
                     exit()
             novo_cenario = self.cenario.desenhar()
+            pygame.event.pump()
+            
             if novo_cenario:
                 self.cenario = novo_cenario
                 if player.ultima_direcao == "esquerda":   

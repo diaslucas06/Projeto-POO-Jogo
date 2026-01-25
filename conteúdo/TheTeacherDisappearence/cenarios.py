@@ -38,6 +38,8 @@ chave = Key1(164, 330)
 chave_m5 = Key2(300, 520)
 chave_coapac = Key3(300, 520)
 chave_m1 = Key4(680, 330)
+chave_a38 = Key2(0, 0) # Posição 0,0 porque ela começa com o Hugo
+chave_a38.nome_item = "Chave da Sala A38"
 cartao_acesso = CartaoAcesso(500, 540)
 fita = Fita(500, 530)
 fita2 = Fita2(780, 320)
@@ -53,6 +55,9 @@ WHITE = (255, 255, 255)
 #personagens
 hugo = Hugo()
 zelador = Zelador()
+
+# estados: "inicio", "buscando_provas", "finalizado"
+estado_missao_hugo = "inicio"
 
 sair_sala = False
 
@@ -298,19 +303,16 @@ class CorredorA38(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorA36()
 
-#consertar problema com o cartão reaparecendo
+
 class CorredorA30(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA28.png")
-        
-        if not cartao_acesso.coletado:
-            self.items.add(cartao_acesso)
             
-        self.item_necessario = cartao_acesso
+        self.item_necessario = pe_de_cabra
         self.porta = pygame.Rect(500,200,100,340)
         
-        if not cartao_acesso.utilizado:
+        if not pe_de_cabra.utilizado:
             self.trancada = True
         else:
             self.trancada = False
@@ -631,25 +633,48 @@ class SalaA36(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
         
+class CorredorA38(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
+        
+        self.porta = pygame.Rect(640, 200, 100, 340)
+        
+        self.item_necessario = chave_a38
+        
+        if not chave_a38.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
+
+    def mudar_tela(self):
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return SalaA38()
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorA42()
+        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+            return CorredorA36()
+        
 class SalaA38(Cenario):
-    
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "SalaA36.png")
+        
+        if not cartao_acesso.coletado and cartao_acesso not in lista_itens:
+            cartao_acesso.rect.topleft = (600, 530)
+            self.items.add(cartao_acesso)
+        
         player.ultima_direcao = "direita"
         player.animacao_atual = player.andar_direita
         player.image = player.andar_direita[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
-        if not fita.coletado:
-            self.items.add(fita)
-        
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             player.saindo_porta = True
             return CorredorA38()
-        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return None
+        return None
         
 class LabM5(Cenario):
     def __init__(self):
@@ -702,7 +727,6 @@ class LabM5(Cenario):
 class InteriorBolsa(Cenario):
     def __init__(self):
         super().__init__()
-        #Recarrega a imagem do fundo (Garantindo que não fique preto)
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "dentro_bolsa.png")
         info_tela = pygame.display.get_surface().get_size()
         self.image = pygame.image.load(self.caminho).convert()
@@ -755,7 +779,6 @@ class InteriorBolsa(Cenario):
             agora = pygame.time.get_ticks()
             if agora - self.mensagem_timer < self.duracao_mensagem:
                 texto_surf = hud.font.render(self.mensagem_texto, True, (255, 255, 255))
-                # Centraliza a mensagem na tela
                 largura_texto = texto_surf.get_width()
                 self.tela.blit(texto_surf, (LARGURA//2 - largura_texto//2, 100))
             else:
@@ -770,7 +793,6 @@ class InteriorBolsa(Cenario):
         return None
     
 class LabM1(Cenario):
-    
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM1.png")
@@ -787,14 +809,73 @@ class LabM1(Cenario):
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-        self.dialogo = Dialogo_Hugo1(cenario=self)
         
+        self.definir_dialogo_atual()
+
+    def definir_dialogo_atual(self):
+        from characters.dialogue import Dialogo_Hugo1, Dialogo_Hugo2, Dialogo_Hugo_Espera
+        global estado_missao_hugo
+        
+        if estado_missao_hugo == "inicio":
+            self.dialogo = Dialogo_Hugo1(cenario=self)
+        elif estado_missao_hugo == "buscando_provas":
+            if provas_hugo in lista_itens:
+                self.dialogo = Dialogo_Hugo2(cenario=self)
+            else:
+                self.dialogo = Dialogo_Hugo_Espera(cenario=self)
+        else:
+            self.dialogo = Dialogo_Hugo2(cenario=self)
+
+    def desenhar(self):
+        global estado_missao_hugo
+        self.teclas = pygame.key.get_pressed()
+        
+        super().desenhar()
+
+        alcance = self.character.rect.inflate(300, 300)
+        
+        if player.rect.colliderect(alcance):
+            if self.teclas[pygame.K_i]:
+                pygame.time.delay(150) 
+                
+                self.fundo_salvo = self.tela.copy()
+                self.dialogo.run()
+                
+                #LÓGICA DE ENTREGA DA CHAVE
+                if estado_missao_hugo == "buscando_provas" and provas_hugo in lista_itens:
+                    lista_itens.remove(provas_hugo)
+                    
+                    chave_a38.image = pygame.transform.scale(chave_a38.image, (25, 40))
+                    chave_a38.coletado = True
+                    lista_itens.append(chave_a38)
+                    
+                    self.mensagem_texto = f"Voce recebeu: {chave_a38.nome_item}"
+                    self.exibir_mensagem = True
+                    self.mensagem_timer = pygame.time.get_ticks()
+                    
+                    for indice, item_inv in enumerate(lista_itens):
+                        nova_x = inventario.posicao_base_x + (indice * inventario.espacamento_entre_itens)
+                        item_inv.rect.topleft = (nova_x, inventario.posicao_y)
+                    
+                    # Muda o estado para o Hugo não dar a chave de novo
+                    estado_missao_hugo = "finalizado"
+                
+                # Se for a primeira vez que falou com ele, inicia a busca
+                elif estado_missao_hugo == "inicio":
+                    estado_missao_hugo = "buscando_provas"
+
+                self.definir_dialogo_atual()
+                pygame.event.clear()
+
+        return self.mudar_tela()
+
     def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return None
-        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+        # Garante que a colisão de saída seja verificada
+        if player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             player.saindo_porta = True
             return CorredorM1()
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
         
 class LabM6(Cenario):
     

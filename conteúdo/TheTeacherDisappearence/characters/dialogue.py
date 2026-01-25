@@ -161,6 +161,8 @@ class Dialogo():
             self.text_view = True
             self.running = False
             
+            pygame.event.pump()
+            
 class Dialogo_Hugo1(Dialogo):
     def __init__(self, cenario):
         super().__init__(cenario)
@@ -178,30 +180,26 @@ class Dialogo_Hugo1(Dialogo):
             ["Aluna", "Se eu não entender o que está acontecendo,", "ninguém vai. Eu preciso de alguma pista."],
             ["Hugo", "Certo, se quer respostas.. vai precisar me ajudar,", "os alunos estão quase me sequestrando junto", "por não corrigir as provas.."],
             ["Hugo", "Vá lá no Laboratório M6.", "Traga minhas provas e eu te darei uma pista!"],
-            ["Aluna", "Entendido. Vou até o M6 e volto assim que", "decifrar o código."],
+            ["Aluna", "Entendido. Vou até o M6 e volto assim que", "pegar suas provas."],
             ["Hugo", "Rápido. E... não diga a ninguém que conversou", "comigo. Eu não quero ser o próximo a desaparecer..."]
         ]
         
+class Dialogo_Hugo_Espera(Dialogo):
+    def __init__(self, cenario):
+        super().__init__(cenario)
+        self.dialog_text = [
+            ["Hugo", "Ainda aqui? Eu fui bem claro.", "Vá até o Laboratório M6 e traga minhas provas!"],
+            ["Hugo", "Não volte aqui sem elas se quiser a sua pista."]
+        ]
+
 class Dialogo_Hugo2(Dialogo):
     def __init__(self, cenario):
         super().__init__(cenario)
         self.dialog_text = [
-            #Aplicar diálogo correto
-            ["Hugo", "O que faz aqui a essa hora? Esse laboratório devia", "estar trancado."],
-            ["Aluna", "Calma, estou apenas em busca de pistas. O senhor", "sabe o que aconteceu com a professora Maíra?"],
-            ["Hugo", "Não fale esse nome em voz alta. Desde o que", "aconteceu... as pessoas evitam comentar. Há câ-", "meras, microfones..."],
-            ["Hugo", "Não dá pra confiar em nada aqui dentro."],
-            ["Aluna","O senhor parece assustado. O que realmente está", "acontecendo? Ela desapareceu mesmo dentro do", "campus?"],
-            ["Hugo", "Sim, ou pelo menos é o que dizem. A última vez", "que a vi foi... deixa eu lembrar... quinta-feira,", "por volta das sete da noite. Ela saiu apressada,"],
-            ["Hugo", "com alguns arquivos no pendrive. Depois disso,", "sumiu."],
-            ["Aluna", "Sete da noite... quinta-feira... isso foi antes", "da queda de energia, não foi? Isso tem alguma", "ligação?"],
-            ["Hugo", "Talvez tenha. Mas eu não posso dizer mais nada...", "é perigoso. Já falei demais."],
-            ["Aluna", "Se eu não entender o que está acontecendo,", "ninguém vai. Eu preciso de alguma pista."],
-            ["Hugo", "Certo, se quer respostas, vai ter que provar que", "pode lidar com elas. Vá até o Laboratório M6."],
-            ["Hugo", "Há um sistema antigo lá, algo que só quem decifra", "é quem é digno de alguma pista."],
-            ["Hugo", "Lá dentro há um terminal de segurança. Se conse-", "guir resolver o código travado nele... eu te direi", "o resto. Só tenha cuidado!"],
-            ["Aluna", "Entendido. Vou até o M6 e volto assim que", "decifrar o código."],
-            ["Hugo", "Rápido. E... não diga a ninguém que conversou", "comigo. Eu não quero ser o próximo a desaparecer."]
+            ["Aluna", "Hugo, aqui estão as provas que você pediu.", "Consegui pegá-las no M6."],
+            ["Hugo", "Top! Finalmente poderei corrigir isso.", "Os alunos já estavam perdendo a paciência."],
+            ["Hugo", "Como prometido, aqui está o que você precisa.", "Está chave abre a sala A38."],
+            ["Hugo", "Tome cuidado. O que tem lá dentro pode ser", "pior do que você imagina."]
         ]
         
 class Dialogo_Zelador(Dialogo):
