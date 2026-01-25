@@ -176,11 +176,10 @@ class Dialogo_Hugo1(Dialogo):
             ["Aluna", "Sete da noite... quinta-feira... isso foi antes", "da queda de energia, não foi? Isso tem alguma", "ligação?"],
             ["Hugo", "Talvez tenha. Mas eu não posso dizer mais nada...", "é perigoso. Já falei demais."],
             ["Aluna", "Se eu não entender o que está acontecendo,", "ninguém vai. Eu preciso de alguma pista."],
-            ["Hugo", "Certo, se quer respostas, vai ter que provar que", "pode lidar com elas. Vá até o Laboratório M6."],
-            ["Hugo", "Há um sistema antigo lá, algo que só quem decifra", "é quem é digno de alguma pista."],
-            ["Hugo", "Lá dentro há um terminal de segurança. Se conse-", "guir resolver o código travado nele... eu te direi", "o resto. Só tenha cuidado!"],
+            ["Hugo", "Certo, se quer respostas.. vai precisar me ajudar,", "os alunos estão quase me sequestrando junto", "por não corrigir as provas.."],
+            ["Hugo", "Vá lá no Laboratório M6.", "Traga minhas provas e eu te darei uma pista!"],
             ["Aluna", "Entendido. Vou até o M6 e volto assim que", "decifrar o código."],
-            ["Hugo", "Rápido. E... não diga a ninguém que conversou", "comigo. Eu não quero ser o próximo a desaparecer."]
+            ["Hugo", "Rápido. E... não diga a ninguém que conversou", "comigo. Eu não quero ser o próximo a desaparecer..."]
         ]
         
 class Dialogo_Hugo2(Dialogo):
