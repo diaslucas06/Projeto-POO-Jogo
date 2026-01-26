@@ -1,6 +1,6 @@
 import pygame
 from ui.hud import Inventario, Hud, Seta
-from items.keys import Key1, Key2, Key3, Key4, CartaoAcesso, Fita, Fita2, Carrinho, PéDeCabra, Provas
+from items.keys import Key1, Key2, Key3, Key4, CartaoAcesso, Fita, Fita2, Carrinho, PéDeCabra, Provas, Tesoura
 from characters.base import Hugo, Zelador
 from ui.sounds import Som, Musica
 import os
@@ -46,7 +46,8 @@ fita2 = Fita2(780, 320)
 fita3 = Fita(400, 530)
 carrinho = Carrinho(50, 330)
 pe_de_cabra = PéDeCabra(50, 430)
-provas_hugo = Provas(1060, 380)
+provas_hugo = Provas(1050, 380)
+tesoura = Tesoura(1130, 400)
 lista_itens = []
 
 #cores
@@ -572,7 +573,6 @@ class CorredorM6(Cenario):
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = True
-            player.saindo_porta = True
             return LabM6()
         elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return None
@@ -882,10 +882,12 @@ class LabM6(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM6.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
             
         if not provas_hugo.coletado:
             self.items.add(provas_hugo)
+            
+        if not tesoura.coletado:
+            self.items.add(tesoura)
             
         player.ultima_direcao = "direita"
         player.animacao_atual = player.andar_direita

@@ -72,7 +72,6 @@ class Fita2(Item):
         self.image = pygame.transform.scale(self.image, (100, 200))
         self.nome_item = "Fita"
 
-#consertar problema com o cartão reaparecendo
 class CartaoAcesso(Item):
 
     def __init__(self, x, y):
@@ -88,6 +87,14 @@ class PéDeCabra(Item):
         super().__init__(x, y)
         self.image = pygame.transform.scale(self.image, (20, 60))
         self.nome_item = "Pé de Cabra"
+        
+class Tesoura(Item):
+
+    def __init__(self, x, y):
+        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "tesoura.png")
+        super().__init__(x, y)
+        self.image = pygame.transform.scale(self.image, (30, 60))
+        self.nome_item = "Tesoura"
         
 class Provas(Item):
 
