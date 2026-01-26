@@ -35,6 +35,7 @@ class Hud():
         self.abrir_bolsa = self.font.render("Pressione 'E' para abrir a bolsa", True, WHITE)
         self.porta_trancada = self.font.render("A porta está trancada, encontre uma forma de abrí-la", True, WHITE)
         self.destrancar_porta = self.font.render("Pressione 'E' para destrancar a porta", True, WHITE)
+        self.ativar_alarme = self.font.render("Pressione 'E' para ativar o alarme de incêndio", True, WHITE)
 
         self.tecla_p = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_p.png"))
         self.tecla_p = pygame.transform.scale(self.tecla_p, (30, 30))

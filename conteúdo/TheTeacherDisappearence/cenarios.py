@@ -62,6 +62,12 @@ estado_missao_hugo = "inicio"
 
 sair_sala = False
 
+#alarme
+alarme_ativo = False
+tempo_inicio_alarme = 0
+duracao_alarme = 30000 
+som_alarme = None
+
 class Cenario():
    
     def __init__(self):
@@ -91,6 +97,7 @@ class Cenario():
        
         self.item_necessario = None
         
+        #mensagem de coleta de item
         self.mensagem_texto = ""
         self.mensagem_timer = 0
         self.exibir_mensagem = False
@@ -167,22 +174,33 @@ class Cenario():
             player.rect.y = 295
             player.saindo_porta = False
                
+               
+        # Timer
+        agora_timer = pygame.time.get_ticks() 
+        global alarme_ativo, tempo_inicio_alarme, som_alarme #chama as variáveis que estão fora, não criando novas dentro da classe
         if player.rect.colliderect(self.alarme):
+            self.tela.blit(hud.ativar_alarme, (60,20))
+            self.tela.blit(hud.tecla_e, (20, 20))
             if self.teclas[pygame.K_e]:
-                som_alarme = Musica("alarm.ogg")
-                som_alarme.play()
-                self.alarme_ativado = True
-                alarme_tempo = 20000
-                inicio_alarme = pygame.time.get_ticks()
-                while self.alarme_ativado:
-                    agora = pygame.time.get_ticks()
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            pygame.quit()
-                    if agora - inicio_alarme >= alarme_tempo:
-                        self.alarme_ativado = False
-                        som_alarme.parar()
-                    pygame.time.Clock().tick(FPS)
+                if not alarme_ativo:
+                    alarme_ativo = True
+                    tempo_inicio_alarme = agora_timer
+                    som_alarme = Musica("alarm.ogg")
+                    som_alarme.play()
+
+        # Exibição e Contagem
+        if alarme_ativo:
+            tempo_passado = agora_timer - tempo_inicio_alarme
+            if tempo_passado < duracao_alarme:
+                #desenha o tempo que falta para o timer terminar
+                segundos_restantes = (duracao_alarme - tempo_passado) // 1000
+                txt_timer = hud.font.render(f"Tempo: {segundos_restantes}s", True, (255, 0, 0))
+                largura_texto = txt_timer.get_width()
+                self.tela.blit(txt_timer, (LARGURA // 2 - largura_texto//2, 50))
+            else:
+                alarme_ativo = False
+                if som_alarme:
+                    som_alarme.parar()
            
            
         #desenhando itens
@@ -689,7 +707,7 @@ class LabM5(Cenario):
         pos_y = 380 
         self.bolsa_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
         
-        caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "Bolsa_maíra.png")
+        caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "items", "Bolsa_maíra.png")
         self.imagem_bolsa = pygame.image.load(caminho_img).convert_alpha()
         
         self.imagem_bolsa = pygame.transform.scale(self.imagem_bolsa, tamanho)
