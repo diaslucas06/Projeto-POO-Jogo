@@ -25,7 +25,7 @@ class Zelador(Base_Personagem):
         super().__init__()        
         self.image = pygame.transform.scale(self.image, (350, 350))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (320, 245) 
+        self.rect.topleft = (370, 245) 
         self.indo_embora = False
         self.foi_embora = False
         self.velocidade = 5

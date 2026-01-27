@@ -36,6 +36,9 @@ class Hud():
         self.porta_trancada = self.font.render("A porta está trancada, encontre uma forma de abrí-la", True, WHITE)
         self.destrancar_porta = self.font.render("Pressione 'E' para destrancar a porta", True, WHITE)
         self.ativar_alarme = self.font.render("Pressione 'E' para ativar o alarme de incêndio", True, WHITE)
+        
+        self.cadeado = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "cadeado.png"))
+        self.cadeado = pygame.transform.scale(self.cadeado, (30, 30))
 
         self.tecla_p = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_p.png"))
         self.tecla_p = pygame.transform.scale(self.tecla_p, (30, 30))
@@ -45,6 +48,12 @@ class Hud():
         
         self.tecla_e = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_e.png"))
         self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
+        
+        self.tecla_s = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_s.png"))
+        self.tecla_s = pygame.transform.scale(self.tecla_e, (30, 30))
+        
+        self.tecla_esc = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_esc.png"))
+        self.tecla_esc = pygame.transform.scale(self.tecla_esc, (40, 30))
 
         self.space = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "space.png"))
         self.space = pygame.transform.scale(self.space, (60, 30))
@@ -56,7 +65,7 @@ class Seta(pygame.sprite.Sprite):
         self.destino = destino
         self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "seta.png"))
         self.image = pygame.transform.scale(self.image, (70, 70))
-        self.image.set_alpha(128)
+        self.image.set_alpha(180)
         self.clicado = False
         self.rect = self.image.get_rect()
         self.rect.topleft = x, y

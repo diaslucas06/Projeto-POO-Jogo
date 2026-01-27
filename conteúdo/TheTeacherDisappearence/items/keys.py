@@ -91,9 +91,9 @@ class PéDeCabra(Item):
 class Tesoura(Item):
 
     def __init__(self, x, y):
-        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "tesoura.png")
+        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "tesoura_fechada.png")
         super().__init__(x, y)
-        self.image = pygame.transform.scale(self.image, (30, 60))
+        self.image = pygame.transform.scale(self.image, (40, 70))
         self.nome_item = "Tesoura"
         
 class Provas(Item):
@@ -101,7 +101,7 @@ class Provas(Item):
     def __init__(self, x, y):
         self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "provas_hugo.png")
         super().__init__(x, y)
-        self.image = pygame.transform.scale(self.image, (70, 100))
+        self.image = pygame.transform.scale(self.image, (280, 340))
         self.nome_item = "Provas de Hugo"
         
 class Carrinho(pygame.sprite.Sprite):
