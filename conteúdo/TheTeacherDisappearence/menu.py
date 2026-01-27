@@ -4,7 +4,7 @@ import sys
 from ui.sounds import Musica
 from player import Player
 from main import Game
-from cenarios import CorredorA36
+from cenarios import CorredorA36, Diretoria
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
@@ -210,7 +210,7 @@ class História:
                     running = False
                 if self.running == False:
                     musica.parar()
-                    Game(cenario=CorredorA36()).run()
+                    Game(cenario=Diretoria()).run()
             
             clock.tick(FPS)
         pygame.quit()

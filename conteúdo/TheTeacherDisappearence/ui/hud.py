@@ -50,7 +50,7 @@ class Hud():
         self.tecla_e = pygame.transform.scale(self.tecla_e, (30, 30))
         
         self.tecla_s = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_s.png"))
-        self.tecla_s = pygame.transform.scale(self.tecla_e, (30, 30))
+        self.tecla_s = pygame.transform.scale(self.tecla_s, (30, 30))
         
         self.tecla_esc = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "teclas", "tecla_esc.png"))
         self.tecla_esc = pygame.transform.scale(self.tecla_esc, (40, 30))
