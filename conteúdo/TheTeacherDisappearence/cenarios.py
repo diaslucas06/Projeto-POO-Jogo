@@ -203,7 +203,8 @@ class Cenario():
                 alarme_ativo = False
                 if som_alarme:
                     som_alarme.parar()
-           
+                    musica = Musica("Iron wasteland.mp3")
+                    musica.play()
            
         #desenhando itens
         self.items.draw(self.tela)
@@ -280,6 +281,13 @@ class Cenario():
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
   
+  
+# CENÁRIOS
+
+# CORREDORES
+
+# CORREDORES SALAS DE AULA
+
 class CorredorA36(Cenario):
     def __init__(self):
         super().__init__()
@@ -310,9 +318,16 @@ class CorredorA38(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
-        self.porta = pygame.Rect(640,200,100,340)
         
-            
+        self.porta = pygame.Rect(640, 200, 100, 340)
+        
+        self.item_necessario = chave_a38
+        
+        if not chave_a38.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
+
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = False
@@ -353,6 +368,37 @@ class CorredorA26(Cenario):
             return CorredorA30()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return CorredorCOAPAC1()
+        
+class CorredorA42(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA42.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        if not zelador.foi_embora:
+            self.zelador = zelador 
+            self.zelador.rect.topleft = (320, 245)
+            if self.zelador not in self.characters:
+                self.characters.add(self.zelador)
+            self.dialogo = Dialogo_Zelador(cenario=self)
+        if seta1 not in self.setas:
+            self.setas.add(seta1)
+        if player.voltando_seta:
+            player.voltando_seta = False
+            player.ultima_direcao = "direita"
+            player.animacao_atual = player.andar_direita
+            player.image = player.andar_direita[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+            player.rect.left = 295
+            
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
+        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+            return CorredorA38()
+        
+        
+# CORREDORES COAPAC
         
 class CorredorCOAPAC1(Cenario):
     
@@ -433,94 +479,37 @@ class CorredorCOAPAC4(Cenario):
             return CorredorCOAPAC3()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return None
-
-class Diretoria(Cenario):
-
+        
+class CorredorNapne(Cenario):
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Diretoria.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        
-        if not pe_de_cabra.coletado:
-            self.items.add(pe_de_cabra)
-            
-        player.ultima_direcao = "esquerda"
-        player.animacao_atual = player.andar_esquerda
-        player.image = player.andar_esquerda[int(player.atual)]
-        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorNapne.png")
+        self.porta = pygame.Rect(1100, 200, 100, 340)
+        self.item_necessario = pe_de_cabra
+
+        if not pe_de_cabra.utilizado:
+            self.trancada = True
+        else:
+            self.trancada = False
+
+        if seta7.clicado:
+            seta7.clicado = False
+            player.ultima_direcao = "direita"
+            player.animacao_atual = player.andar_direita
+            player.image = player.andar_direita[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
 
     def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return None
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
-            return CorredorCOAPAC4()
-        
-class Arquibancadas(Cenario):
-    
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-
-    def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return Arquibancadas2()
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+        if self.entrar_sala:
+            self.entrar_sala = False
             return Exterior()
-        
-class Arquibancadas2(Cenario):
-    
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada2.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.nova_area = None 
-        if seta2 not in self.setas:
-            self.setas.add(seta2)
-
-        if player.voltando_seta:
-            player.voltando_seta = False
-            player.ultima_direcao = "direita"
-            player.animacao_atual = player.andar_direita
-            player.image = player.andar_direita[int(player.atual)]
-            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-            player.rect.left = 295
-
-    def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return None
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
-            return Arquibancadas() 
-            
-class CorredorA42(Cenario):
-    
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA42.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        if not zelador.foi_embora:
-            self.zelador = zelador 
-            self.zelador.rect.topleft = (320, 245)
-            if self.zelador not in self.characters:
-                self.characters.add(self.zelador)
-            self.dialogo = Dialogo_Zelador(cenario=self)
-        if seta1 not in self.setas:
-            self.setas.add(seta1)
-        if player.voltando_seta:
-            player.voltando_seta = False
-            player.ultima_direcao = "direita"
-            player.animacao_atual = player.andar_direita
-            player.image = player.andar_direita[int(player.atual)]
-            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-            player.rect.left = 295
-            
-    
-        
-    def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return None
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return CorredorCOAPAC4()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return CorredorA38()
+            return None        
+        
+        
+# CORREDORES LABORATÓRIOS
         
 class CorredorM1(Cenario):
     
@@ -589,33 +578,6 @@ class CorredorM4(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
             return None    
         
-class CorredorM6(Cenario):
-    
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM6.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.porta = pygame.Rect(1050,200,100,340)
-        
-        if seta4 not in self.setas:
-            self.setas.add(seta4)
-            
-        if seta5.clicado:
-            seta5.clicado = False
-            player.ultima_direcao = "esquerda"
-            player.animacao_atual = player.andar_esquerda
-            player.image = player.andar_esquerda[int(player.atual)]
-            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-
-    def mudar_tela(self):
-        if self.entrar_sala:
-            self.entrar_sala = True
-            return LabM6()
-        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return None
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
-            return CorredorM4()      
-        
 class CorredorM5(Cenario):
     
     def __init__(self):
@@ -648,8 +610,38 @@ class CorredorM5(Cenario):
         elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorM1()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
-            return None
+            return None        
         
+class CorredorM6(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorM6.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.porta = pygame.Rect(1050,200,100,340)
+        
+        if seta4 not in self.setas:
+            self.setas.add(seta4)
+            
+        if seta5.clicado:
+            seta5.clicado = False
+            player.ultima_direcao = "esquerda"
+            player.animacao_atual = player.andar_esquerda
+            player.image = player.andar_esquerda[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def mudar_tela(self):
+        if self.entrar_sala:
+            self.entrar_sala = True
+            return LabM6()
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return CorredorM4()      
+        
+
+# SALAS DE AULA
+
 class SalaA36(Cenario):
     
     def __init__(self):
@@ -670,60 +662,8 @@ class SalaA36(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
         
-class CorredorA38(Cenario):
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorA38.png")
-        
-        self.porta = pygame.Rect(640, 200, 100, 340)
-        
-        self.item_necessario = chave_a38
-        
-        if not chave_a38.utilizado:
-            self.trancada = True
-        else:
-            self.trancada = False
-
-    def mudar_tela(self):
-        if self.entrar_sala:
-            self.entrar_sala = False
-            return SalaA38()
-        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return CorredorA42()
-        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return CorredorA36()
-
-
-class CorredorNapne(Cenario):
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorNapne.png")
-        self.porta = pygame.Rect(1100, 200, 100, 340)
-        self.item_necessario = pe_de_cabra
-
-        if not pe_de_cabra.utilizado:
-            self.trancada = True
-        else:
-            self.trancada = False
-
-        if seta7.clicado:
-            seta7.clicado = False
-            player.ultima_direcao = "direita"
-            player.animacao_atual = player.andar_direita
-            player.image = player.andar_direita[int(player.atual)]
-            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-
-
-    def mudar_tela(self):
-        if self.entrar_sala:
-            self.entrar_sala = False
-            return Exterior()
-        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return CorredorCOAPAC4()
-        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return None
-        
 class SalaA38(Cenario):
+    
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "SalaA36.png")
@@ -743,123 +683,72 @@ class SalaA38(Cenario):
             return CorredorA38()
         return None
         
-class LabM5(Cenario):
+class Diretoria(Cenario):
+
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM5.png")
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Diretoria.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
-        #Definimos o tamanho desejado da imagem da bolsa
-        tamanho = (140, 140) 
+        if not pe_de_cabra.coletado:
+            self.items.add(pe_de_cabra)
+            
+        player.ultima_direcao = "esquerda"
+        player.animacao_atual = player.andar_esquerda
+        player.image = player.andar_esquerda[int(player.atual)]
+        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return CorredorCOAPAC4()
         
-        pos_x = 1000 
-        pos_y = 380 
-        self.bolsa_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
+class COAPAC(Cenario):
+
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "COAPAC.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
-        caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "items", "Bolsa_maíra.png")
-        self.imagem_bolsa = pygame.image.load(caminho_img).convert_alpha()
+        if not chave.coletado:
+            self.items.add(chave)
+            
+        if not tesoura.coletado:
+            self.items.add(tesoura)
+            
+        tamanho = (80, 70) 
         
-        self.imagem_bolsa = pygame.transform.scale(self.imagem_bolsa, tamanho)
+        pos_x = 600 
+        pos_y = 400 
+        self.porta_lapis_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
+        
+        caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "items", "porta-lapis.png")
+        self.imagem_porta_lapis = pygame.image.load(caminho_img).convert_alpha()
+        
+        self.imagem_porta_lapis = pygame.transform.scale(self.imagem_porta_lapis, tamanho)
             
         player.ultima_direcao = "direita"
+        player.animacao_atual = player.andar_direita
+        player.image = player.andar_direita[int(player.atual)]
+        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
     def desenhar(self):
         super().desenhar()
-
-        self.tela.blit(self.imagem_bolsa, (self.bolsa_objeto.x, self.bolsa_objeto.y))
+        self.tela.blit(self.imagem_porta_lapis, (self.porta_lapis_objeto.x, self.porta_lapis_objeto.y))
         self.player_andar.draw(self.tela)
-        
-        if player.saindo_porta:
-            player.rect.centerx = self.bolsa_objeto.centerx
-            player.rect.y = 295 
-            player.saindo_porta = False
-
-        #Colisão para abrir
-        if player.rect.colliderect(self.bolsa_objeto):
-            self.tela.blit(hud.abrir_bolsa, (60, 20)) 
-            self.tela.blit(hud.tecla_e, (20, 20))
-            
-            if self.teclas[pygame.K_e]:
-                return InteriorBolsa()
-            
         return self.mudar_tela()
-        
+
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             player.saindo_porta = True
-            return CorredorM5()
+            return CorredorCOAPAC3()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
-
-class InteriorBolsa(Cenario):
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "dentro_bolsa.png")
-        info_tela = pygame.display.get_surface().get_size()
-        self.image = pygame.image.load(self.caminho).convert()
-        self.image = pygame.transform.scale(self.image, info_tela)
-
-        if not chave_m1.coletado:
-            self.items.add(chave_m1)
-
-        if not fita2.coletado:
-            self.items.add(fita2)
-
-    def desenhar(self):
-        self.teclas = pygame.key.get_pressed()
-
-        self.tela.blit(self.image, (0, 0))
-        self.items.draw(self.tela)
-        self.tela.blit(inventario.image, (300,610))
-        inventario.update()
         
-        #HUD (Mensagens)
-        self.tela.blit(hud.font.render("Interior da bolsa", True, (255, 255, 255)), (20, 20))
-        self.tela.blit(hud.tecla_p, (20, 60))
-        self.tela.blit(hud.pegar, (60, 60))
-        self.tela.blit(hud.tecla_esc, (20, 100))
-        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 100))
         
-        for i, item_inv in enumerate(lista_itens):
-            nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
-            self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+# LABORATÓRIOS        
 
-        nomes_coletados = []
-        for item in self.items:
-            if self.teclas[pygame.K_p]:
-                item.image = pygame.transform.scale(item.image, (25, 40))
-                pegar_item_som.play()
-                lista_itens.append(item)
-                item.coletado = True
-                nomes_coletados.append(item.nome_item)
-                for indice, item_inv in enumerate(lista_itens):
-                    nova_posicao_x = inventario.posicao_base_x + (indice * inventario.espacamento_entre_itens)
-                    item_inv.rect.topleft = (nova_posicao_x, inventario.posicao_y)
-                    self.items.remove(item)
-                    
-        if nomes_coletados:
-            todos_nomes = " e ".join(nomes_coletados) #o join separa os nomes colocando, nesse caso, o 'e' entre eles
-            self.mensagem_texto = f"Voce coletou: {todos_nomes}"
-            self.exibir_mensagem = True
-            self.mensagem_timer = pygame.time.get_ticks()
-            
-        if self.exibir_mensagem:
-            agora = pygame.time.get_ticks()
-            if agora - self.mensagem_timer < self.duracao_mensagem:
-                texto_surf = hud.font.render(self.mensagem_texto, True, (255, 255, 255))
-                largura_texto = texto_surf.get_width()
-                self.tela.blit(texto_surf, (LARGURA//2 - largura_texto//2, 100))
-            else:
-                self.exibir_mensagem = False
-
-        return self.mudar_tela()
-
-    def mudar_tela(self):
-        if self.teclas[pygame.K_ESCAPE]:
-            player.saindo_porta = True
-            return LabM5()
-        return None
-    
 class LabM1(Cenario):
     def __init__(self):
         super().__init__()
@@ -944,7 +833,56 @@ class LabM1(Cenario):
             return CorredorM1()
         elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return None
+
+class LabM5(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "LabM5.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
+        #Definimos o tamanho desejado da imagem da bolsa
+        tamanho = (140, 140) 
+        
+        pos_x = 1000 
+        pos_y = 380 
+        self.bolsa_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
+        
+        caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "items", "Bolsa_maíra.png")
+        self.imagem_bolsa = pygame.image.load(caminho_img).convert_alpha()
+        
+        self.imagem_bolsa = pygame.transform.scale(self.imagem_bolsa, tamanho)
+            
+        player.ultima_direcao = "direita"
+        
+    def desenhar(self):
+        super().desenhar()
+
+        self.tela.blit(self.imagem_bolsa, (self.bolsa_objeto.x, self.bolsa_objeto.y))
+        self.player_andar.draw(self.tela)
+        
+        if player.saindo_porta:
+            player.rect.centerx = self.bolsa_objeto.centerx
+            player.rect.y = 295 
+            player.saindo_porta = False
+
+        #Colisão para abrir
+        if player.rect.colliderect(self.bolsa_objeto):
+            self.tela.blit(hud.abrir_bolsa, (60, 20)) 
+            self.tela.blit(hud.tecla_e, (20, 20))
+            
+            if self.teclas[pygame.K_e]:
+                return InteriorBolsa()
+            
+        return self.mudar_tela()
+        
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            player.saindo_porta = True
+            return CorredorM5()
+        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+            return None
+
 class LabM6(Cenario):
     
     def __init__(self):
@@ -994,6 +932,78 @@ class LabM6(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
         
+        
+# INTERIORES DE BOLSAS
+
+class InteriorBolsa(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "dentro_bolsa.png")
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
+
+        if not chave_m1.coletado:
+            self.items.add(chave_m1)
+
+        if not fita2.coletado:
+            self.items.add(fita2)
+
+    def desenhar(self):
+        self.teclas = pygame.key.get_pressed()
+
+        self.tela.blit(self.image, (0, 0))
+        self.items.draw(self.tela)
+        self.tela.blit(inventario.image, (300,610))
+        inventario.update()
+        
+        #HUD (Mensagens)
+        self.tela.blit(hud.font.render("Interior da bolsa", True, (255, 255, 255)), (20, 20))
+        self.tela.blit(hud.tecla_p, (20, 60))
+        self.tela.blit(hud.pegar, (60, 60))
+        self.tela.blit(hud.tecla_esc, (20, 100))
+        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 100))
+        
+        for i, item_inv in enumerate(lista_itens):
+            nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
+            self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+
+        nomes_coletados = []
+        for item in self.items:
+            if self.teclas[pygame.K_p]:
+                item.image = pygame.transform.scale(item.image, (25, 40))
+                pegar_item_som.play()
+                lista_itens.append(item)
+                item.coletado = True
+                nomes_coletados.append(item.nome_item)
+                for indice, item_inv in enumerate(lista_itens):
+                    nova_posicao_x = inventario.posicao_base_x + (indice * inventario.espacamento_entre_itens)
+                    item_inv.rect.topleft = (nova_posicao_x, inventario.posicao_y)
+                    self.items.remove(item)
+                    
+        if nomes_coletados:
+            todos_nomes = " e ".join(nomes_coletados) #o join separa os nomes colocando, nesse caso, o 'e' entre eles
+            self.mensagem_texto = f"Voce coletou: {todos_nomes}"
+            self.exibir_mensagem = True
+            self.mensagem_timer = pygame.time.get_ticks()
+            
+        if self.exibir_mensagem:
+            agora = pygame.time.get_ticks()
+            if agora - self.mensagem_timer < self.duracao_mensagem:
+                texto_surf = hud.font.render(self.mensagem_texto, True, (255, 255, 255))
+                largura_texto = texto_surf.get_width()
+                self.tela.blit(texto_surf, (LARGURA//2 - largura_texto//2, 100))
+            else:
+                self.exibir_mensagem = False
+
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if self.teclas[pygame.K_ESCAPE]:
+            player.saindo_porta = True
+            return LabM5()
+        return None
+
 class InteriorMochila(Cenario):
     def __init__(self):
         super().__init__()
@@ -1054,49 +1064,9 @@ class InteriorMochila(Cenario):
             player.saindo_porta = True
             return LabM6()
         return None
+    
 
-class COAPAC(Cenario):
-
-    def __init__(self):
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "COAPAC.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        
-        if not chave.coletado:
-            self.items.add(chave)
-            
-        if not tesoura.coletado:
-            self.items.add(tesoura)
-            
-        tamanho = (80, 70) 
-        
-        pos_x = 600 
-        pos_y = 400 
-        self.porta_lapis_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
-        
-        caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "items", "porta-lapis.png")
-        self.imagem_porta_lapis = pygame.image.load(caminho_img).convert_alpha()
-        
-        self.imagem_porta_lapis = pygame.transform.scale(self.imagem_porta_lapis, tamanho)
-            
-        player.ultima_direcao = "direita"
-        player.animacao_atual = player.andar_direita
-        player.image = player.andar_direita[int(player.atual)]
-        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-        
-    def desenhar(self):
-        super().desenhar()
-        self.tela.blit(self.imagem_porta_lapis, (self.porta_lapis_objeto.x, self.porta_lapis_objeto.y))
-        self.player_andar.draw(self.tela)
-        return self.mudar_tela()
-
-    def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            player.saindo_porta = True
-            return CorredorCOAPAC3()
-        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return None
-
+# EXTERIOR
 
 class Exterior(Cenario):
 
@@ -1115,11 +1085,49 @@ class Exterior(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorNapne()
 
+class Arquibancadas(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return Arquibancadas2()
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return Exterior()
+        
+class Arquibancadas2(Cenario):
+    
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada2.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.nova_area = None 
+        if seta2 not in self.setas:
+            self.setas.add(seta2)
+
+        if player.voltando_seta:
+            player.voltando_seta = False
+            player.ultima_direcao = "direita"
+            player.animacao_atual = player.andar_direita
+            player.image = player.andar_direita[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+            player.rect.left = 295
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            return Arquibancadas() 
+        
+#adicionar porta (alçapão)
 class Campo(Cenario):
 
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png")
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png") #sem imagem
         player.ultima_direcao = "esquerda"
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
@@ -1138,3 +1146,27 @@ class Campo(Cenario):
             return Arquibancadas2()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
+        
+# SUBTERRÂNEO
+        
+class Subterraneo(Cenario):
+
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "subterrâneo.png") #sem imagem
+        
+        #personagem deve aparecer no meio
+        player.ultima_direcao = "esquerda"
+        player.animacao_atual = player.andar_esquerda
+        player.image = player.andar_esquerda[int(player.atual)]
+        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        
+    def desenhar(self):
+        super().desenhar() #adicionar todas as funcionalidades restantes
+
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return Arquibancadas()
+        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+            return CorredorNapne()
