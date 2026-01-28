@@ -213,3 +213,10 @@ class Dialogo_Zelador(Dialogo):
             ["Zelador", "Então vai rápido. E evita falar que eu te vi, tá?", "A supervisão tá pegando no pé de todo mundo."],
         ]
         
+class Dialogo_Coordenador(Dialogo):
+    def __init__(self, cenario):
+        super().__init__(cenario)
+        self.dialog_text = [
+            ["Coordenador", "O que você está fazendo aqui? Alunos não estão", "permitidos nesse campus durante a noite!", "Vá embora!"],
+        ]
+        

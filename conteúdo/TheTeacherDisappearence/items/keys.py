@@ -85,7 +85,7 @@ class PéDeCabra(Item):
     def __init__(self, x, y):
         self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "pedecabra.png")
         super().__init__(x, y)
-        self.image = pygame.transform.scale(self.image, (20, 60))
+        self.image = pygame.transform.scale(self.image, (20, 100))
         self.nome_item = "Pé de Cabra"
         
 class Tesoura(Item):

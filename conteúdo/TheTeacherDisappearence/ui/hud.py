@@ -33,6 +33,7 @@ class Hud():
         self.pegar = self.font.render("Pressione 'P' para pegar o item", True, WHITE)
         self.clicar = self.font.render("Pressione 'S' para mudar para o outro lado do corredor", True, WHITE)
         self.abrir_bolsa = self.font.render("Pressione 'E' para abrir a bolsa", True, WHITE)
+        self.acessar_computador = self.font.render("Pressione 'E' para acessar o computador", True, WHITE)
         self.porta_trancada = self.font.render("A porta está trancada, encontre uma forma de abrí-la", True, WHITE)
         self.destrancar_porta = self.font.render("Pressione 'E' para destrancar a porta", True, WHITE)
         self.ativar_alarme = self.font.render("Pressione 'E' para ativar o alarme de incêndio", True, WHITE)

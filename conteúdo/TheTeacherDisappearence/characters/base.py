@@ -56,7 +56,7 @@ class Coordenador(Base_Personagem):
         
         self.image = pygame.transform.scale(self.image, (350, 350))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (920, 245) 
+        self.rect.topleft = (320, 245) 
 
     def update(self):
         pass

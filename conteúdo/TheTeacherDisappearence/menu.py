@@ -199,6 +199,7 @@ class História:
             self.text_view = True
             self.running = False
             self.game_loop()    
+            
     def game_loop(self):
         
         clock = pygame.time.Clock()

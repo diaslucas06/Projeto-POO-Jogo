@@ -5,7 +5,7 @@ from characters.base import Hugo, Zelador, Coordenador, Zelador
 from ui.sounds import Som, Musica
 import os
 from main import player
-from characters.dialogue import Dialogo_Hugo1, Dialogo_Zelador
+from characters.dialogue import Dialogo_Hugo1, Dialogo_Zelador, Dialogo_Coordenador
 
 #player
 PLAYER_LARGURA = 170
@@ -46,7 +46,7 @@ fita = Fita(500, 530)
 fita2 = Fita2(780, 320)
 fita3 = Fita(350, 530)
 carrinho = Carrinho(50, 330)
-pe_de_cabra = PéDeCabra(50, 430)
+pe_de_cabra = PéDeCabra(260, 490)
 provas_hugo = Provas(LARGURA//2 - 140, ALTURA//2 - 130)
 tesoura = Tesoura(620, 390)
 lista_itens = []
@@ -104,6 +104,11 @@ class Cenario():
         self.mensagem_timer = 0
         self.exibir_mensagem = False
         self.duracao_mensagem = 3000
+        
+        self.tempo_inicial = pygame.time.get_ticks()
+        self.tempo_espera = 5000
+        
+        self.dialogo_acabou = False
        
     def desenhar(self):
        
@@ -142,8 +147,6 @@ class Cenario():
        
         #colisão com a porta para entrar em salas/laboratórios
         if player.rect.colliderect(self.porta):
-            if getattr(self, 'coordenador_na_sala', False): 
-                self.tela.blit(hud.font.render("O Coordenador esta na sala!", True, (255,0,0)), (400, 50))
             if self.item_necessario in lista_itens and self.trancada:
                 self.tela.blit(hud.destrancar_porta, (60, 20))
                 self.tela.blit(hud.tecla_e, (20, 20))
@@ -244,7 +247,7 @@ class Cenario():
        
         for character in self.characters:
             character.update()
-            if character == hugo or character == coordenador:
+            if character == hugo:
                 self.tela.blit(character.image, (120, 245))
                 alcance_interacao = character.rect.inflate(300, 300)
             elif character == zelador:
@@ -254,6 +257,13 @@ class Cenario():
                 if character.rect.x > LARGURA + 400:
                     character.kill()
                     character.foi_embora = True
+            elif character == coordenador:
+                self.tela.blit(character.image, character.rect) 
+                alcance_interacao = character.rect.inflate(100, 100)
+                self.fundo_salvo = self.tela.copy()
+                self.dialogo.run()
+                self.dialogo_acabou = True
+                
             if player.rect.colliderect(alcance_interacao):
                 if self.teclas[pygame.K_i]:
                     self.fundo_salvo = self.tela.copy()
@@ -445,72 +455,16 @@ class CorredorCOAPAC3(Cenario):
         self.trancada = not chave_coapac.utilizado
             
         self.porta = pygame.Rect(920, 200, 100, 340)
-
-    def desenhar(self):
-        # Chamamos o desenhar padrão (fundo e player)
-        super().desenhar() 
-        
-        # Verificamos se o alarme foi tocado para "tirar" o coordenador da sala
-        global alarme_ativo
-        if alarme_ativo:
-            self.coordenador_na_sala = False
-
-        return self.mudar_tela()
     
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = False
-            
-            # A LOGICA DE FLAGRANTE:
-            # Se o jogador entrar e o coordenador ainda estiver lá (alarme desligado)
-            if self.coordenador_na_sala:
-                # Aqui você retorna a sua tela de Game Over ou uma função de captura
-                print("Flagrado! O Coordenador te viu.")
-                return TelaGameOver() # Certifique-se de ter essa classe
-            else:
-                return COAPAC()
+            return COAPAC()
 
         elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorCOAPAC2()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorCOAPAC4()
-        
-class TelaGameOver(Cenario):
-    def __init__(self):
-        
-        super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac4.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.tempo_inicial = pygame.time.get_ticks()
-        self.tempo_espera = 5000 
-
-    def desenhar(self):
-        super().desenhar()
-        
-        tempo_atual = pygame.time.get_ticks()
-        segundos_restantes = max(0, 5 - (tempo_atual - self.tempo_inicial) // 1000)
-        
-        # Uso direto do pygame.font para não depender de outras classes
-        fonte_t = pygame.font.SysFont("Arial", 80, bold=True)
-        fonte_m = pygame.font.SysFont("Arial", 30)
-        
-        txt_g = fonte_t.render("GAME OVER", True, (255, 0, 0))
-        txt_m = fonte_m.render(self.motivo, True, (200, 200, 200))
-        txt_s = fonte_m.render(f"Retornando em {segundos_restantes}...", True, (255, 255, 0))
-        
-        # Centralização (ajuste LARGURA se necessário)
-        self.tela.blit(txt_g, (LARGURA // 2 - txt_g.get_width() // 2, 200))
-        self.tela.blit(txt_m, (LARGURA // 2 - txt_m.get_width() // 2, 320))
-        self.tela.blit(txt_s, (LARGURA // 2 - txt_s.get_width() // 2, 450))
-        
-        return self.mudar_tela()
-
-    def mudar_tela(self):
-        if pygame.time.get_ticks() - self.tempo_inicial >= self.tempo_espera:
-            global alarme_ativo
-            alarme_ativo = False # Reseta o alarme para a próxima tentativa
-            return CorredorA36() 
-        return None  
 
 class CorredorCOAPAC4(Cenario):
 
@@ -747,6 +701,7 @@ class Diretoria(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Diretoria.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
+        self.computador = pygame.Rect(50, 360, 60, 60)
         if not pe_de_cabra.coletado:
             self.items.add(pe_de_cabra)
             
@@ -754,6 +709,15 @@ class Diretoria(Cenario):
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        
+    def desenhar(self):
+        super().desenhar()
+        if player.rect.colliderect(self.computador):
+            self.tela.blit(hud.acessar_computador, (60, 20)) 
+            self.tela.blit(hud.tecla_e, (20, 20))
+            
+            if self.teclas[pygame.K_e]:
+                return Computador()
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -781,7 +745,7 @@ class COAPAC(Cenario):
         self.porta_lapis_objeto = pygame.Rect(pos_x, pos_y, tamanho[0], tamanho[1]) 
         
         caminho_img = os.path.join(os.path.dirname(__file__), "data", "images", "items", "porta-lapis.png")
-        self.imagem_porta_lapis = pygame.image.load(caminho_img).convert_alpha()
+        self.imagem_porta_lapis = pygame.image.load(caminho_img)
         
         self.imagem_porta_lapis = pygame.transform.scale(self.imagem_porta_lapis, tamanho)
             
@@ -790,14 +754,25 @@ class COAPAC(Cenario):
         player.image = player.andar_direita[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
+        self.dialogo = Dialogo_Coordenador(cenario=self)
+        
+        
+        
     def desenhar(self):
         super().desenhar()
         self.tela.blit(self.imagem_porta_lapis, (self.porta_lapis_objeto.x, self.porta_lapis_objeto.y))
         self.player_andar.draw(self.tela)
+        if not alarme_ativo:
+            if coordenador not in self.characters:
+                self.characters.add(coordenador)
         return self.mudar_tela()
 
     def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+        if self.dialogo_acabou:
+            self.dialogo_acabou = False
+            player.saindo_porta = True
+            return CorredorA36()
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             player.saindo_porta = True
             return CorredorCOAPAC3()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
@@ -1227,3 +1202,72 @@ class Subterraneo(Cenario):
             return Arquibancadas()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorNapne()
+        
+class Computador(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "computador.png")
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
+        self.aba = pygame.Rect(400, 200, 200, 50)
+
+    def desenhar(self):
+        self.teclas = pygame.key.get_pressed()
+
+        self.tela.blit(self.image, (0, 0))
+        self.items.draw(self.tela)
+        self.tela.blit(inventario.image, (300,610))
+        inventario.update()
+        
+        #HUD (Mensagens)
+        self.tela.blit(hud.font.render("Computador da Diretoria", True, (255, 255, 255)), (20, 20))
+        self.tela.blit(hud.tecla_esc, (20, 60))
+        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
+        
+        for i, item_inv in enumerate(lista_itens):
+            nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
+            self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if self.teclas[pygame.K_ESCAPE]:
+            player.saindo_porta = True
+            return Diretoria()
+        return None
+    
+class Computador2(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "computador2.png")
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
+
+
+    def desenhar(self):
+        self.teclas = pygame.key.get_pressed()
+
+        self.tela.blit(self.image, (0, 0))
+        self.items.draw(self.tela)
+        self.tela.blit(inventario.image, (300,610))
+        inventario.update()
+        
+        #HUD (Mensagens)
+        self.tela.blit(hud.font.render("Computador da Diretoria", True, (255, 255, 255)), (20, 20))
+        self.tela.blit(hud.tecla_esc, (20, 60))
+        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
+        
+        for i, item_inv in enumerate(lista_itens):
+            nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
+            self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if self.teclas[pygame.K_ESCAPE]:
+            player.saindo_porta = True
+            return Diretoria()
+        return None
+    
