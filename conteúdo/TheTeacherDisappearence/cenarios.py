@@ -1,7 +1,7 @@
 import pygame
 from ui.hud import Inventario, Hud, Seta
 from items.keys import Key1, Key2, Key3, Key4, CartaoAcesso, Fita, Fita2, Carrinho, PéDeCabra, Provas, Tesoura
-from characters.base import Hugo, Zelador
+from characters.base import Hugo, Zelador, Coordenador, Zelador
 from ui.sounds import Som, Musica
 import os
 from main import player
@@ -57,6 +57,7 @@ WHITE = (255, 255, 255)
 #personagens
 hugo = Hugo()
 zelador = Zelador()
+coordenador = Coordenador()
 
 # estados: "inicio", "buscando_provas", "finalizado"
 estado_missao_hugo = "inicio"
@@ -141,6 +142,8 @@ class Cenario():
        
         #colisão com a porta para entrar em salas/laboratórios
         if player.rect.colliderect(self.porta):
+            if getattr(self, 'coordenador_na_sala', False): 
+                self.tela.blit(hud.font.render("O Coordenador esta na sala!", True, (255,0,0)), (400, 50))
             if self.item_necessario in lista_itens and self.trancada:
                 self.tela.blit(hud.destrancar_porta, (60, 20))
                 self.tela.blit(hud.tecla_e, (20, 20))
@@ -241,7 +244,7 @@ class Cenario():
        
         for character in self.characters:
             character.update()
-            if character == hugo:
+            if character == hugo or character == coordenador:
                 self.tela.blit(character.image, (120, 245))
                 alcance_interacao = character.rect.inflate(300, 300)
             elif character == zelador:
@@ -431,29 +434,83 @@ class CorredorCOAPAC3(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac3.png")
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW) 
        
-        self.alarme = pygame.Rect(950, 200, 100, 340)
+        self.alarme = pygame.Rect(1200, 200, 100, 340)
         
-        if not carrinho.coletado:
-            self.items.add(carrinho)
+        # O Coordenador existe apenas logicamente aqui dentro
+        self.coordenador_na_sala = True
             
         self.item_necessario = chave_coapac
-        if not chave_coapac.utilizado:
-            self.trancada = True
-        else:
-            self.trancada = False
+        self.trancada = not chave_coapac.utilizado
             
-        self.porta = pygame.Rect(1050, 200, 100, 340)
+        self.porta = pygame.Rect(920, 200, 100, 340)
 
+    def desenhar(self):
+        # Chamamos o desenhar padrão (fundo e player)
+        super().desenhar() 
+        
+        # Verificamos se o alarme foi tocado para "tirar" o coordenador da sala
+        global alarme_ativo
+        if alarme_ativo:
+            self.coordenador_na_sala = False
+
+        return self.mudar_tela()
+    
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = False
-            return COAPAC()
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            
+            # A LOGICA DE FLAGRANTE:
+            # Se o jogador entrar e o coordenador ainda estiver lá (alarme desligado)
+            if self.coordenador_na_sala:
+                # Aqui você retorna a sua tela de Game Over ou uma função de captura
+                print("Flagrado! O Coordenador te viu.")
+                return TelaGameOver() # Certifique-se de ter essa classe
+            else:
+                return COAPAC()
+
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorCOAPAC2()
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+        elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorCOAPAC4()
+        
+class TelaGameOver(Cenario):
+    def __init__(self):
+        
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac4.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        self.tempo_inicial = pygame.time.get_ticks()
+        self.tempo_espera = 5000 
+
+    def desenhar(self):
+        super().desenhar()
+        
+        tempo_atual = pygame.time.get_ticks()
+        segundos_restantes = max(0, 5 - (tempo_atual - self.tempo_inicial) // 1000)
+        
+        # Uso direto do pygame.font para não depender de outras classes
+        fonte_t = pygame.font.SysFont("Arial", 80, bold=True)
+        fonte_m = pygame.font.SysFont("Arial", 30)
+        
+        txt_g = fonte_t.render("GAME OVER", True, (255, 0, 0))
+        txt_m = fonte_m.render(self.motivo, True, (200, 200, 200))
+        txt_s = fonte_m.render(f"Retornando em {segundos_restantes}...", True, (255, 255, 0))
+        
+        # Centralização (ajuste LARGURA se necessário)
+        self.tela.blit(txt_g, (LARGURA // 2 - txt_g.get_width() // 2, 200))
+        self.tela.blit(txt_m, (LARGURA // 2 - txt_m.get_width() // 2, 320))
+        self.tela.blit(txt_s, (LARGURA // 2 - txt_s.get_width() // 2, 450))
+        
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if pygame.time.get_ticks() - self.tempo_inicial >= self.tempo_espera:
+            global alarme_ativo
+            alarme_ativo = False # Reseta o alarme para a próxima tentativa
+            return CorredorA36() 
+        return None  
 
 class CorredorCOAPAC4(Cenario):
 

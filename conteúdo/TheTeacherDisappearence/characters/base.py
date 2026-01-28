@@ -47,3 +47,16 @@ class Zelador(Base_Personagem):
                 self.index_animacao = 0
             
             self.image = self.frames_andar[int(self.index_animacao)]
+
+class Coordenador(Base_Personagem):
+    def __init__(self):
+        # O caminho precisa subir um nível (..) para achar a pasta data
+        self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "zelador_idle.png")
+        super().__init__()
+        
+        self.image = pygame.transform.scale(self.image, (350, 350))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (920, 245) 
+
+    def update(self):
+        pass

@@ -96,3 +96,4 @@ class Player(pygame.sprite.Sprite):
         else:
             self.rect.x = self.rect.x + 1
             return "colidiu"
+        
