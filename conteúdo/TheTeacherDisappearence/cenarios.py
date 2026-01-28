@@ -109,6 +109,8 @@ class Cenario():
         self.tempo_espera = 5000
         
         self.dialogo_acabou = False
+        
+        self.mouse_pressionado_anteriormente = False
        
     def desenhar(self):
        
@@ -172,7 +174,8 @@ class Cenario():
                         item_usado.coletado = True # Garante que não reapareça
                         
                         if item_usado in lista_itens:
-                            lista_itens.remove(item_usado)
+                            if item_usado != pe_de_cabra:
+                                lista_itens.remove(item_usado)
                         
                         return self.mudar_tela()
                     
@@ -481,7 +484,7 @@ class CorredorCOAPAC4(Cenario):
 
         if seta7 not in self.setas:
             self.setas.add(seta7)
-
+            
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = False
@@ -509,6 +512,10 @@ class CorredorNapne(Cenario):
             player.animacao_atual = player.andar_direita
             player.image = player.andar_direita[int(player.atual)]
             player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+            
+        if player.saindo_porta:
+            player.saindo_porta = False
+            
 
     def mudar_tela(self):
         if self.entrar_sala:
@@ -620,7 +627,7 @@ class CorredorM5(Cenario):
             return LabM5()
         elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorM1()
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA:
             return None        
         
 class CorredorM6(Cenario):
@@ -705,6 +712,11 @@ class Diretoria(Cenario):
         if not pe_de_cabra.coletado:
             self.items.add(pe_de_cabra)
             
+        if player.saindo_porta:
+            player.rect.centerx = self.computador.centerx + 60
+            player.rect.y = 295 
+            player.saindo_porta = False
+            
         player.ultima_direcao = "esquerda"
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
@@ -718,11 +730,14 @@ class Diretoria(Cenario):
             
             if self.teclas[pygame.K_e]:
                 return Computador()
+            
+        return self.mudar_tela()
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return None
-        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA:
+            player.saindo_porta = True
             return CorredorCOAPAC4()
         
 class COAPAC(Cenario):
@@ -755,8 +770,6 @@ class COAPAC(Cenario):
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
         self.dialogo = Dialogo_Coordenador(cenario=self)
-        
-        
         
     def desenhar(self):
         super().desenhar()
@@ -1159,11 +1172,12 @@ class Campo(Cenario):
 
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png") #sem imagem
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png") 
         player.ultima_direcao = "esquerda"
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+        self.porta = pygame.Rect(950,200,100,340)
 
         if seta2.clicado:
             seta2.clicado = False
@@ -1173,7 +1187,10 @@ class Campo(Cenario):
             player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
 
     def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return Subterraneo()
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             player.voltando_seta = True
             return Arquibancadas2()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
@@ -1185,7 +1202,7 @@ class Subterraneo(Cenario):
 
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "subterrâneo.png") #sem imagem
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png") 
         
         #personagem deve aparecer no meio
         player.ultima_direcao = "esquerda"
@@ -1204,13 +1221,14 @@ class Subterraneo(Cenario):
             return CorredorNapne()
         
 class Computador(Cenario):
+    
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "computador.png")
         info_tela = pygame.display.get_surface().get_size()
         self.image = pygame.image.load(self.caminho).convert()
         self.image = pygame.transform.scale(self.image, info_tela)
-        self.aba = pygame.Rect(400, 200, 200, 50)
+        self.aba = pygame.Rect(445, 45, 80, 13)
 
     def desenhar(self):
         self.teclas = pygame.key.get_pressed()
@@ -1223,12 +1241,20 @@ class Computador(Cenario):
         #HUD (Mensagens)
         self.tela.blit(hud.font.render("Computador da Diretoria", True, (255, 255, 255)), (20, 20))
         self.tela.blit(hud.tecla_esc, (20, 60))
-        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
+        self.tela.blit(hud.font.render("Pressione 'Esc'", True, (255, 255, 255)), (70, 60))
+        self.tela.blit(hud.font.render("para sair", True, (255, 255, 255)), (70, 90))
         
         for i, item_inv in enumerate(lista_itens):
             nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
             self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
 
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_atualmente_pressionado = pygame.mouse.get_pressed()[0] #botão esquerdo
+        
+        if mouse_atualmente_pressionado and not self.mouse_pressionado_anteriormente:
+            if self.aba.collidepoint(mouse_pos):
+                return Computador2()
+                    
         return self.mudar_tela()
 
     def mudar_tela(self):
@@ -1244,7 +1270,7 @@ class Computador2(Cenario):
         info_tela = pygame.display.get_surface().get_size()
         self.image = pygame.image.load(self.caminho).convert()
         self.image = pygame.transform.scale(self.image, info_tela)
-
+        self.aba = pygame.Rect(385, 45, 80, 13)
 
     def desenhar(self):
         self.teclas = pygame.key.get_pressed()
@@ -1257,11 +1283,21 @@ class Computador2(Cenario):
         #HUD (Mensagens)
         self.tela.blit(hud.font.render("Computador da Diretoria", True, (255, 255, 255)), (20, 20))
         self.tela.blit(hud.tecla_esc, (20, 60))
-        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
+        self.tela.blit(hud.font.render("Pressione 'Esc'", True, (255, 255, 255)), (70, 60))
+        self.tela.blit(hud.font.render("para sair", True, (255, 255, 255)), (70, 90))
         
         for i, item_inv in enumerate(lista_itens):
             nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
             self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+        
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_atualmente_pressionado = pygame.mouse.get_pressed()[0]
+
+        
+        if mouse_atualmente_pressionado and not self.mouse_pressionado_anteriormente:
+            if self.aba.collidepoint(mouse_pos):
+                return Computador()
+            
 
         return self.mudar_tela()
 
