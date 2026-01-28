@@ -66,7 +66,7 @@ sair_sala = False
 #alarme
 alarme_ativo = False
 tempo_inicio_alarme = 0
-duracao_alarme = 30000 
+duracao_alarme = 10000 
 som_alarme = None
 
 class Cenario():
@@ -181,8 +181,8 @@ class Cenario():
         agora_timer = pygame.time.get_ticks() 
         global alarme_ativo, tempo_inicio_alarme, som_alarme #chama as variáveis que estão fora, não criando novas dentro da classe
         if player.rect.colliderect(self.alarme):
-            self.tela.blit(hud.ativar_alarme, (60,20))
-            self.tela.blit(hud.tecla_e, (20, 20))
+            self.tela.blit(hud.ativar_alarme, (90,20))
+            self.tela.blit(hud.tecla_e, (50, 20))
             if self.teclas[pygame.K_e]:
                 if not alarme_ativo:
                     alarme_ativo = True
@@ -373,8 +373,7 @@ class CorredorCOAPAC2(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac2.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        self.alarme = pygame.Rect(950,200,100,340)
-
+        
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorCOAPAC1()
@@ -387,6 +386,8 @@ class CorredorCOAPAC3(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "CorredorCoapac3.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+       
+        self.alarme = pygame.Rect(950, 200, 100, 340)
         
         if not carrinho.coletado:
             self.items.add(carrinho)
@@ -396,7 +397,8 @@ class CorredorCOAPAC3(Cenario):
             self.trancada = True
         else:
             self.trancada = False
-        self.porta = pygame.Rect(1050,200,100,340)
+            
+        self.porta = pygame.Rect(1050, 200, 100, 340)
 
     def mudar_tela(self):
         if self.entrar_sala:
