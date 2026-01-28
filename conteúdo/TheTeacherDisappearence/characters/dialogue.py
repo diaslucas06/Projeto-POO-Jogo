@@ -115,11 +115,11 @@ class Dialogo():
             for bloco in self.dialog_text:
                 
                 if "Aluna" in bloco: #cor muda baseado em quem está falando
-                    BOX = (0, 100, 0)
-                    BORDER = (0, 50, 0)
+                    BOX = (126, 140, 84)
+                    BORDER = (47, 69, 56)
                 else:
-                    BOX = (0, 0, 100)
-                    BORDER = (0, 0, 50)
+                    BOX = (84, 105, 140)
+                    BORDER = (47, 54, 69)
                         
                 self.y = 0
                 self.tela.blit(self.cenario.fundo_salvo, (0, 0))
