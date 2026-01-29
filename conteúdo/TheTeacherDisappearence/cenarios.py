@@ -1,7 +1,7 @@
 import pygame
 from ui.hud import Inventario, Hud, Seta
 from items.keys import Key1, Key2, Key3, Key4, CartaoAcesso, Fita, Fita2, Carrinho, PéDeCabra, Provas, Tesoura
-from characters.base import Hugo, Zelador, Coordenador, Zelador
+from characters.base import Hugo, Zelador, Coordenador, Zelador, MaíraPresa
 from ui.sounds import Som, Musica
 import os
 from main import player
@@ -58,6 +58,7 @@ WHITE = (255, 255, 255)
 hugo = Hugo()
 zelador = Zelador()
 coordenador = Coordenador()
+maira = MaíraPresa()
 
 # estados: "inicio", "buscando_provas", "finalizado"
 estado_missao_hugo = "inicio"
@@ -266,6 +267,9 @@ class Cenario():
                 self.fundo_salvo = self.tela.copy()
                 self.dialogo.run()
                 self.dialogo_acabou = True
+            elif character == maira:
+                self.tela.blit(character.image, character.rect) 
+                alcance_interacao = character.rect.inflate(100, 100)
                 
             if player.rect.colliderect(alcance_interacao):
                 if self.teclas[pygame.K_i]:
@@ -791,6 +795,36 @@ class COAPAC(Cenario):
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
         
+class Grêmio(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Grêmio.png")
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+            
+        self.armario = pygame.Rect(160, 100, 120, 200)
+        player.ultima_direcao = "esquerda"
+        player.animacao_atual = player.andar_esquerda
+        player.image = player.andar_esquerda[int(player.atual)]
+        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+
+    def desenhar(self):
+        super().desenhar()
+        if player.rect.colliderect(self.armario):
+            self.tela.blit(hud.acessar_computador, (60, 20)) 
+            self.tela.blit(hud.tecla_e, (20, 20))
+            
+            if self.teclas[pygame.K_e]:
+                return InteriorArmario()
+            
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            return None
+        elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA:
+            player.saindo_porta = True
+            return CorredorA30()
+        
         
 # LABORATÓRIOS        
 
@@ -1110,6 +1144,48 @@ class InteriorMochila(Cenario):
             return LabM6()
         return None
     
+class InteriorArmario(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "dentro_mochila.png") # ainda sem foto
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
+
+    def desenhar(self):
+        self.teclas = pygame.key.get_pressed()
+
+        self.tela.blit(self.image, (0, 0))
+        self.items.draw(self.tela)
+        self.tela.blit(inventario.image, (300,610))
+        inventario.update()
+        
+        #HUD (Mensagens)
+        self.tela.blit(hud.font.render("Interior da mochila", True, (255, 255, 255)), (20, 20))
+        self.tela.blit(hud.tecla_esc, (20, 60))
+        self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
+        
+        for i, item_inv in enumerate(lista_itens):
+            nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
+            self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+            
+        if self.exibir_mensagem:
+            agora = pygame.time.get_ticks()
+            if agora - self.mensagem_timer < self.duracao_mensagem:
+                texto_surf = hud.font.render(self.mensagem_texto, True, (255, 255, 255))
+                largura_texto = texto_surf.get_width()
+                self.tela.blit(texto_surf, (LARGURA//2 - largura_texto//2, 100))
+            else:
+                self.exibir_mensagem = False
+
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        if self.teclas[pygame.K_ESCAPE]:
+            player.saindo_porta = True
+            return Grêmio()
+        return None
+    
 
 # EXTERIOR
 
@@ -1177,7 +1253,7 @@ class Campo(Cenario):
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-        self.porta = pygame.Rect(950,200,100,340)
+        self.porta = pygame.Rect(950,200,20,340)
 
         if seta2.clicado:
             seta2.clicado = False
@@ -1205,20 +1281,24 @@ class Subterraneo(Cenario):
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png") 
         
         #personagem deve aparecer no meio
+        
         player.ultima_direcao = "esquerda"
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
+        if maira not in self.characters:
+            self.characters.add(maira)
+        
+        
     def desenhar(self):
         super().desenhar() #adicionar todas as funcionalidades restantes
 
-
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
-            return Arquibancadas()
+            return None
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
-            return CorredorNapne()
+            return None
         
 class Computador(Cenario):
     

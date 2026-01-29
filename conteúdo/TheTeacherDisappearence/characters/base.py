@@ -50,13 +50,26 @@ class Zelador(Base_Personagem):
 
 class Coordenador(Base_Personagem):
     def __init__(self):
-        # O caminho precisa subir um nível (..) para achar a pasta data
+        
         self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "zelador_idle.png")
         super().__init__()
         
         self.image = pygame.transform.scale(self.image, (350, 350))
         self.rect = self.image.get_rect()
         self.rect.topleft = (320, 245) 
+
+    def update(self):
+        pass
+    
+class MaíraPresa(Base_Personagem):
+    def __init__(self):
+        
+        self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "maíra_presa.png")
+        super().__init__()
+        
+        self.image = pygame.transform.scale(self.image, (250, 420))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (910, 175) 
 
     def update(self):
         pass
