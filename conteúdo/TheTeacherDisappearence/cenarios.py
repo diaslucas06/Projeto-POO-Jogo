@@ -5,7 +5,7 @@ from characters.base import Hugo, Zelador, Coordenador, Zelador, Maíra, Aluno
 from ui.sounds import Som, Musica
 import os
 from main import player
-from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador, Dialogo_Maíra
+from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador, Dialogo_Maíra, dialogo_maira_acabou
 
 #player
 PLAYER_LARGURA = 170
@@ -86,6 +86,25 @@ explodindo = False
 fios_cortados = False
 dialogo_aluno_acabou = False
 dialogo_maira_acabou = False
+
+class Button():
+    def __init__(self, text, pos, callback):
+        self.text = text
+        self.pos = pos
+        self.callback = callback
+        self.font = pygame.font.SysFont("Arial", 30)
+        self.image = self.font.render(self.text, True, (255, 255, 255))
+        self.rect = self.image.get_rect(center=self.pos)
+
+    def draw(self, screen, mouse_pos):
+        # Muda a cor se o mouse estiver em cima
+        color = (200, 200, 200) if self.rect.collidepoint(mouse_pos) else (255, 255, 255)
+        self.image = self.font.render(self.text, True, color)
+        screen.blit(self.image, self.rect)
+
+    def check_click(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            self.callback()
 
 class Cenario():
    
@@ -1544,11 +1563,11 @@ class Subterraneo(Cenario):
                 self.characters.add(aluno)
             self.dialogo = Dialogo_Coordenador(cenario=self)
             
+        
         global dialogo_maira_acabou
         if not dialogo_maira_acabou:
             self.dialogo2 = Dialogo_Maíra(cenario=self)
-            dialogo_maira_acabou = True
-            
+
         # Aumentar tamanho da explosão
         fator_escala = 3
         fator_escala2 = 4.5
@@ -1602,17 +1621,65 @@ class Subterraneo(Cenario):
             if self.frame_explosao >= len(self.lista_frames):
                 self.explodindo = False
                 return IfExplodindo()
+            
+        return self.mudar_tela()
                 
             
         #adicionar funcionalidade do tempo para realizar as ações
 
     def mudar_tela(self):
+        global dialogo_maira_acabou
+        
         if dialogo_maira_acabou:
-            return None # tela da prisão
-        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            dialogo_maira_acabou = False  
+            return Prisão()
+            
+        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return None
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
+            
+        return None
+
+class Prisão(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Prisao.png") 
+        
+        self.tempo_inicial = pygame.time.get_ticks()
+        self.exibir_botao = False
+        self.delay_botao = 4000 
+        
+        mid_x = 1280 // 2
+        mid_y = 720 // 2 + 150
+        
+        self.btn_jogar = Button("Jogar Novamente", (mid_x, mid_y), self.clicou)
+        self.foi_clicado = False
+
+    def clicou(self):
+        self.foi_clicado = True
+
+    def desenhar(self):
+        super().desenhar() 
+        
+        agora = pygame.time.get_ticks()
+        mouse_pos = pygame.mouse.get_pos()
+        
+        if agora - self.tempo_inicial > self.delay_botao:
+            self.exibir_botao = True
+            
+        if self.exibir_botao:
+            self.btn_jogar.draw(self.tela, mouse_pos)
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    self.btn_jogar.check_click(mouse_pos)
+            
+            if self.foi_clicado:
+                return "VOLTAR_MENU"
+
+    def mudar_tela(self):
+        return None
         
 class Computador(Cenario):
     

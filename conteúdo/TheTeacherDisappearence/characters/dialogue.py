@@ -83,6 +83,9 @@
 import pygame
 import os
 
+dialogo_maira_acabou = False
+dialogo_aluno_acabou = False
+
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
 FPS = 60
@@ -220,12 +223,27 @@ class Dialogo_Coordenador(Dialogo):
     def __init__(self, cenario):
         super().__init__(cenario)
         self.dialog_text = [
-            ["Coordenador", "O que você está fazendo aqui? Alunos não estão", "permitidos nesse campus durante a noite!", "Vá embora!"],
+            ["Coordenador", "Achou mesmo que uma aluna qualquer iria", "estragar anos de planejamento?"],
+            ["Aluna", "Eu sei de tudo! Você sequestrou a Maíra porque", "ela descobriu a verdade, não foi?"],
+            ["Coordenador", "Verdade? A verdade é que este lugar me deve!", "Eu era como você... um aluno de Informática."],
+            ["Coordenador", "Mas eles me reprovaram. Me humilharam!", "Disseram que eu não tinha o que era preciso."],
+            ["Coordenador", "Voltei como funcionário para apagar o meu", "fracasso. Eu só precisava alterar o sistema..."],
+            ["Coordenador", "Falsificar aquele maldito certificado de", "conclusão era o meu direito!"],
+            ["Aluna", "E a Maíra viu você fazendo isso...", "Por isso você a trancou no subterrâneo!"],
+            ["Coordenador", "Ela não quis entender o meu lado. Agora,", "nenhum de vocês vai entender mais nada!", "O IF vai pagar pelo que me fez passar!"]
         ]
         
 class Dialogo_Maíra(Dialogo):
     def __init__(self, cenario):
         super().__init__(cenario)
         self.dialog_text = [
-            ["Maíra Faria", "O que você está fazendo aqui? Alunos não estão", "permitidos nesse campus durante a noite!", "Vá embora!"],
-        ]        
+            ["Maíra", "Meu Deus, eu achei que ninguem me encontraria", "aqui embaixo... Mas que bom que voce veio me salvar!"],
+            ["Maíra", "Você foi muito corajoso. E digno! Não salvou só a mim,", "mas ao IF também."],
+            ["Maíra", "Agora vamos sair daqui logo, a policia ja deve estar", "chegando!"],
+        ]
+
+    def run(self):
+        super().run() # Isso roda o diálogo todo
+        # Depois que o diálogo termina:
+        global dialogo_maira_acabou
+        dialogo_maira_acabou = True

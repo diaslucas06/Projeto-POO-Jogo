@@ -5,6 +5,7 @@ from ui.sounds import Musica
 from player import Player
 from main import Game
 from cenarios import CorredorA36, Campo
+from characters.dialogue import dialogo_maira_acabou
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
@@ -64,9 +65,17 @@ class Menu:
         self.running = True
 
     def start_game(self):
-        print("Iniciando o jogo...") 
-        self.running = False
-        História().run()
+            import characters.dialogue as dlg
+            import cenarios as cen
+            
+            dlg.dialogo_maira_acabou = False
+            dlg.dialogo_aluno_acabou = False
+            cen.fios_cortados = False
+            
+            
+            print("Iniciando o jogo...") 
+            self.running = False
+            História().run()
 
     def show_options(self):
         print("Abrindo opções...")  
@@ -217,6 +226,7 @@ class História:
 
 
 if __name__ == "__main__":
-    history = História()
-    menu = Menu(history.screen)
-    menu.run()
+    while True:
+        history = História()
+        menu = Menu(history.screen)
+        menu.run()
