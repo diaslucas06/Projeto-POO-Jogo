@@ -34,9 +34,10 @@ class Player(pygame.sprite.Sprite):
         self.andar = False
         self.coletar = False
         self.saindo_porta = False
+        self.saindo_item = False
         self.voltando_seta = False
         
-        self.velocidade = 10 #para testes
+        self.velocidade = 30 #para testes
         
         self.ultima_direcao = "direita"
         

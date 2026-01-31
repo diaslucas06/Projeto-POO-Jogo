@@ -104,6 +104,14 @@ class Provas(Item):
         self.image = pygame.transform.scale(self.image, (280, 340))
         self.nome_item = "Provas de Hugo"
         
+class Cartaz(Item):
+
+    def __init__(self, x, y):
+        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "comuns", "cartaz_simples.png")
+        super().__init__(x, y)
+        self.image = pygame.transform.scale(self.image, (220, 290))
+        self.nome_item = "Panfleto de Corrida"
+        
 class Carrinho(pygame.sprite.Sprite):
     
     def __init__(self, x, y):

@@ -37,6 +37,8 @@ class Hud():
         self.porta_trancada = self.font.render("A porta está trancada, encontre uma forma de abrí-la", True, WHITE)
         self.destrancar_porta = self.font.render("Pressione 'E' para destrancar a porta", True, WHITE)
         self.ativar_alarme = self.font.render("Pressione 'E' para ativar o alarme de incêndio", True, WHITE)
+        self.cortar = self.font.render("Pressione 'E' para cortar as amarras de Maíra", True, WHITE)
+        self.cortar_falha = self.font.render("Você precisa de uma tesoura para libertar Maíra", True, WHITE)
         
         self.cadeado = pygame.image.load(os.path.join(os.path.dirname(__file__), "..", "data", "images", "cadeado.png"))
         self.cadeado = pygame.transform.scale(self.cadeado, (30, 30))

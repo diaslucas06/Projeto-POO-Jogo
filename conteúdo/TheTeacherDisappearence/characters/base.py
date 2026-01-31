@@ -1,5 +1,6 @@
 import pygame 
 import os
+from main import player
 
 class Base_Personagem(pygame.sprite.Sprite):
     
@@ -47,21 +48,44 @@ class Zelador(Base_Personagem):
                 self.index_animacao = 0
             
             self.image = self.frames_andar[int(self.index_animacao)]
+            
+class Aluno(Base_Personagem):
+    
+    def __init__(self):
+        self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "personagens", "aluno_idle.png")
+        super().__init__()
+        self.image = pygame.transform.scale(self.image, (150, 350))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (550, 245)
 
 class Coordenador(Base_Personagem):
     def __init__(self):
         
-        self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "zelador_idle.png")
+        pos_x_inicial = 320
+        
+        self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "coordenador", "coordenador_idle_esquerda.png")
+        
         super().__init__()
         
-        self.image = pygame.transform.scale(self.image, (350, 350))
+        self.image = pygame.transform.scale(self.image, (150, 350))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (320, 245) 
+        self.rect.topleft = (pos_x_inicial, 245) 
 
     def update(self):
-        pass
+        
+        if self.rect.x > player.rect.x:
+            img_nome = "coordenador_idle_esquerda.png"
+        else:
+            img_nome = "coordenador_idle_direita.png"
+            
+        # Muda a direção que o coordenador olha
+        novo_caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "coordenador", img_nome)
+        if self.caminho != novo_caminho:
+            self.caminho = novo_caminho
+            self.image = pygame.image.load(self.caminho)
+            self.image = pygame.transform.scale(self.image, (150, 350))
     
-class MaíraPresa(Base_Personagem):
+class Maíra(Base_Personagem):
     def __init__(self):
         
         self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "maíra_presa.png")
@@ -69,7 +93,13 @@ class MaíraPresa(Base_Personagem):
         
         self.image = pygame.transform.scale(self.image, (250, 420))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (910, 175) 
+        self.rect.topleft = (90, 175) 
+        self.liberta = False
 
-    def update(self):
-        pass
+    def update(self):   
+        if self.liberta:
+            novo_caminho = os.path.join(os.path.dirname(__file__), "..", "data", "images", "personagens", "maíra_solta.png") 
+            if self.caminho != novo_caminho:
+                self.caminho = novo_caminho
+                self.image = pygame.image.load(self.caminho)
+                self.image = pygame.transform.scale(self.image, (250, 420))
