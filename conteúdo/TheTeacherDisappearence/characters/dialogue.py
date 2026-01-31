@@ -117,6 +117,9 @@ class Dialogo():
                 if "Aluna" in bloco: #cor muda baseado em quem está falando
                     BOX = (126, 140, 84)
                     BORDER = (47, 69, 56)
+                elif "Maíra Faria" in bloco:
+                    BOX = (172, 50, 87)
+                    BORDER = (102, 2, 33)
                 else:
                     BOX = (84, 105, 140)
                     BORDER = (47, 54, 69)
@@ -220,3 +223,9 @@ class Dialogo_Coordenador(Dialogo):
             ["Coordenador", "O que você está fazendo aqui? Alunos não estão", "permitidos nesse campus durante a noite!", "Vá embora!"],
         ]
         
+class Dialogo_Maíra(Dialogo):
+    def __init__(self, cenario):
+        super().__init__(cenario)
+        self.dialog_text = [
+            ["Maíra Faria", "O que você está fazendo aqui? Alunos não estão", "permitidos nesse campus durante a noite!", "Vá embora!"],
+        ]        

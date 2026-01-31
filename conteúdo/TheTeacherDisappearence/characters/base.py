@@ -56,7 +56,7 @@ class Aluno(Base_Personagem):
         super().__init__()
         self.image = pygame.transform.scale(self.image, (150, 350))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (550, 245)
+        self.rect.topleft = (250, 245)
 
 class Coordenador(Base_Personagem):
     def __init__(self):
@@ -93,7 +93,7 @@ class Maíra(Base_Personagem):
         
         self.image = pygame.transform.scale(self.image, (250, 420))
         self.rect = self.image.get_rect()
-        self.rect.topleft = (90, 175) 
+        self.rect.topleft = (550, 175) 
         self.liberta = False
 
     def update(self):   

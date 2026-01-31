@@ -5,7 +5,7 @@ from characters.base import Hugo, Zelador, Coordenador, Zelador, Maíra, Aluno
 from ui.sounds import Som, Musica
 import os
 from main import player
-from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador
+from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador, Dialogo_Maíra
 
 #player
 PLAYER_LARGURA = 170
@@ -32,7 +32,7 @@ seta7 = Seta(LARGURA//2, 450, "CorredorNapne")
 
 #sons
 pegar_item_som = Som("smw_stomp.mp3")
-abrir_porta_som = Som("smw_door_opens.wav")
+abrir_porta_som = Som("porta_abrindo.mp3")
 usar_tesoura = Som("som_tesoura.mp3")
 
 #itens
@@ -75,8 +75,17 @@ tempo_inicio_alarme = 0
 duracao_alarme = 10000 
 som_alarme = None
 
+#alarme final
+alarme_ativo_final = False
+tempo_inicio_alarme_final = 0
+duracao_alarme_final = 10000 
+som_alarme_final = None
+alarme_final_disparado = False
+explodindo = False
+
 fios_cortados = False
 dialogo_aluno_acabou = False
+dialogo_maira_acabou = False
 
 class Cenario():
    
@@ -199,7 +208,7 @@ class Cenario():
                
         # Timer
         agora_timer = pygame.time.get_ticks() 
-        global alarme_ativo, tempo_inicio_alarme, som_alarme #chama as variáveis que estão fora, não criando novas dentro da classe
+        global alarme_ativo, tempo_inicio_alarme, som_alarme, dialogo_aluno_acabou #chama as variáveis que estão fora, não criando novas dentro da classe
         if player.rect.colliderect(self.alarme):
             self.tela.blit(hud.ativar_alarme, (60,20))
             self.tela.blit(hud.tecla_e, (20, 20))
@@ -209,6 +218,17 @@ class Cenario():
                     tempo_inicio_alarme = agora_timer
                     som_alarme = Musica("alarm.ogg")
                     som_alarme.play()
+            
+        # Timer Final        
+        agora_timer_final = pygame.time.get_ticks() 
+        global alarme_ativo_final, tempo_inicio_alarme_final, som_alarme_final, alarme_final_disparado #chama as variáveis que estão fora, não criando novas dentro da classe
+        if dialogo_aluno_acabou and not alarme_final_disparado:
+            if not alarme_ativo_final:
+                alarme_ativo_final = True
+                alarme_final_disparado = True
+                tempo_inicio_alarme_final = agora_timer_final
+                som_alarme_final = Musica("alarm.ogg")
+                som_alarme_final.play()
 
         # Exibição e Contagem
         if alarme_ativo:
@@ -225,6 +245,31 @@ class Cenario():
                     som_alarme.parar()
                     musica = Musica("Iron wasteland.mp3")
                     musica.play()
+                    
+        if alarme_ativo_final:
+            tempo_passado_final = agora_timer_final - tempo_inicio_alarme_final
+            if tempo_passado_final < duracao_alarme_final:
+                #desenha o tempo que falta para o timer terminar
+                segundos_restantes = (duracao_alarme_final - tempo_passado_final) // 1000
+                txt_timer = hud.font.render(f"Tempo: {segundos_restantes}s", True, (255, 0, 0))
+                largura_texto = txt_timer.get_width()
+                self.tela.blit(txt_timer, (LARGURA // 2 - largura_texto//2, 50))
+            elif tempo_passado_final >= duracao_alarme_final and fios_cortados:
+                alarme_ativo_final = False
+                if som_alarme_final:
+                    som_alarme_final.parar()
+                    musica = Musica("Iron wasteland.mp3")
+                    musica.play()
+            else:
+                #explosão
+                global explodindo
+                if not self.explodindo:
+                    explodindo = True
+                    self.explodindo = True
+                    self.ultimo_update_exp = pygame.time.get_ticks()
+                    alarme_ativo_final = False # Para o timer
+                    if som_alarme_final:
+                        som_alarme_final.parar()
            
         #desenhando itens
         self.items.draw(self.tela)
@@ -293,10 +338,10 @@ class Cenario():
                 self.tela.blit(character.image, character.rect)
                 alcance_interacao = character.rect
                 self.fundo_salvo = self.tela.copy()
-                global dialogo_aluno_acabou
                 if not dialogo_aluno_acabou:
                     self.dialogo.run()
                     self.dialogo_acabou = True
+                    character.kill()
                 dialogo_aluno_acabou = True
                 
             if character != maira and player.rect.colliderect(alcance_interacao):
@@ -340,6 +385,37 @@ class Cenario():
                 
         if cartaz in lista_itens:
             player.velocidade = 15 #aumenta
+            
+    # método para os paineis
+    def desenhar_timer_final(self):
+        global alarme_ativo_final, tempo_inicio_alarme_final, duracao_alarme_final, explodindo, alarme_final_disparado
+        
+        if alarme_final_disparado:
+            agora = pygame.time.get_ticks()
+            tempo_passado = agora - tempo_inicio_alarme_final
+            
+            # verifica a explosão para aparecer assim que o tempo acabar 
+            if tempo_passado >= duracao_alarme_final and not fios_cortados:
+                if not explodindo:
+                    explodindo = True
+                    if som_alarme_final:
+                        som_alarme_final.parar()
+
+            if not fios_cortados:
+                segundos_restantes = max(0, (duracao_alarme_final - tempo_passado) // 1000)
+                txt_timer = hud.font.render(f"Tempo: {segundos_restantes}s", True, (255, 0, 0))
+                largura_texto = txt_timer.get_width()
+                self.tela.blit(txt_timer, (LARGURA // 2 - largura_texto // 2, 50))
+            else:
+                alarme_ativo_final = False
+                print("Salvou")
+                if som_alarme_final:
+                    som_alarme_final.parar()
+                    musica = Musica("Iron wasteland.mp3")
+                    musica.play()
+                txt_timer = hud.font.render(f"Você impediu a explosão!", True, (255, 0, 0))
+                largura_texto = txt_timer.get_width()
+                self.tela.blit(txt_timer, (LARGURA // 2 - largura_texto // 2, 50))
        
     def mudar_tela(self):
         if self.entrar_sala:
@@ -1285,16 +1361,21 @@ class PainelComFios(Cenario):
         for i, item_inv in enumerate(lista_itens):
             nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
             self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+            
+        if explodindo:
+            return Subterraneo()
+            
+        self.desenhar_timer_final()
 
         return self.mudar_tela()
 
     def mudar_tela(self):
+        global fios_cortados
         if self.teclas[pygame.K_ESCAPE]:
-            player.saindo_porta = True
+            player.saindo_item = True
             return Subterraneo()
         if self.teclas[pygame.K_e]:
             if tesoura in lista_itens:
-                global fios_cortados
                 fios_cortados = True
                 usar_tesoura.play()
                 return PainelSemFios()
@@ -1325,12 +1406,20 @@ class PainelSemFios(Cenario):
         for i, item_inv in enumerate(lista_itens):
             nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
             self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))
+            
+        self.desenhar_timer_final()
+        
+        if explodindo:
+            return Subterraneo()   
 
         return self.mudar_tela()
 
     def mudar_tela(self):
+        global fios_cortados
+        if explodindo:
+            return Subterraneo()
         if self.teclas[pygame.K_ESCAPE]:
-            player.saindo_porta = True
+            player.saindo_item = True
             return Subterraneo()
         return None
     
@@ -1432,14 +1521,14 @@ class Subterraneo(Cenario):
 
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "campo.png") 
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Subterrâneo.png") 
         
         player.ultima_direcao = "esquerda"
         player.animacao_atual = player.andar_esquerda
         player.image = player.andar_esquerda[int(player.atual)]
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
-        self.painel = pygame.Rect(900, 300, 100, 200)
+        self.painel = pygame.Rect(270, 300, 100, 200)
         
         if player.saindo_porta:
             player.rect.centerx = self.painel.centerx
@@ -1448,17 +1537,44 @@ class Subterraneo(Cenario):
         
         if maira not in self.characters:
             self.characters.add(maira)
-        if aluno not in self.characters:
-            self.characters.add(aluno)
         
         global dialogo_aluno_acabou
         if not dialogo_aluno_acabou:
+            if aluno not in self.characters:
+                self.characters.add(aluno)
             self.dialogo = Dialogo_Coordenador(cenario=self)
+            
+        global dialogo_maira_acabou
+        if not dialogo_maira_acabou:
+            self.dialogo2 = Dialogo_Maíra(cenario=self)
+            dialogo_maira_acabou = True
+            
+        # Aumentar tamanho da explosão
+        fator_escala = 3
+        fator_escala2 = 4.5
+        nova_largura = int(LARGURA * fator_escala)
+        nova_altura = int(ALTURA * fator_escala2)
+    
+        # Variáveis da Explosão
+        self.explodindo = False
+        self.frame_explosao = 0
+        self.lista_frames = []
+        self.ultimo_update_exp = 0
+        
+        for i in range(1, 6):
+            img = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "explosão", f"Nuclear_explosion{i}.png"))
+            self.lista_frames.append(pygame.transform.scale(img, (nova_largura, nova_altura)))
         
     def desenhar(self):
         super().desenhar() #adicionar todas as funcionalidades restantes
+        
+        if player.saindo_item:
+            player.rect.centerx = self.painel.centerx
+            player.rect.y = 295 
+            player.saindo_item = False
+            
         if player.rect.colliderect(self.painel):
-            self.tela.blit(hud.acessar_computador, (60, 20)) 
+            self.tela.blit(hud.acessar_painel, (60, 20)) 
             self.tela.blit(hud.tecla_e, (20, 20))
             
             global fios_cortados
@@ -1470,10 +1586,30 @@ class Subterraneo(Cenario):
                         return PainelComFios()
                 return None   
             
+        if self.explodindo:
+            agora = pygame.time.get_ticks()
+            
+            img_atual = self.lista_frames[self.frame_explosao]
+            pos_x = (LARGURA // 2) - (img_atual.get_width() // 2)
+            pos_y = (ALTURA // 2) - (img_atual.get_height() // 2 - 50)
+            self.tela.blit(img_atual, (pos_x, pos_y))
+            
+            # Controle de tempo da animação
+            if agora - self.ultimo_update_exp > 100: 
+                self.frame_explosao += 1
+                self.ultimo_update_exp = agora
+            
+            if self.frame_explosao >= len(self.lista_frames):
+                self.explodindo = False
+                return IfExplodindo()
+                
+            
         #adicionar funcionalidade do tempo para realizar as ações
 
     def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+        if dialogo_maira_acabou:
+            return None # tela da prisão
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return None
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None
@@ -1565,3 +1701,49 @@ class Computador2(Cenario):
             return Diretoria()
         return None
     
+class IfExplodindo(Cenario):
+    def __init__(self):
+        super().__init__()
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "ifrn_explosion.png")
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
+        
+        # Aumentar tamanho da explosão
+        fator_escala = 2.5
+        fator_escala2 = 3.5
+        nova_largura = int(LARGURA * fator_escala)
+        nova_altura = int(ALTURA * fator_escala2)
+    
+        # Variáveis da Explosão
+        self.explodindo = False
+        self.frame_explosao = 0
+        self.lista_frames = []
+        self.ultimo_update_exp = 0
+        
+        for i in range(1, 10):
+            img = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "explosão", f"Nuclear_explosion{i}.png"))
+            self.lista_frames.append(pygame.transform.scale(img, (nova_largura, nova_altura)))
+        
+    def desenhar(self):
+        self.tela.blit(self.image, (0, 0)) 
+        agora = pygame.time.get_ticks()
+        
+        img_atual = self.lista_frames[self.frame_explosao]
+        pos_x = (LARGURA // 2) - (img_atual.get_width() // 2)
+        pos_y = (ALTURA // 2) - (img_atual.get_height() // 2 - 50)
+        self.tela.blit(img_atual, (pos_x, pos_y))
+        
+        # Controle de tempo da animação
+        if agora - self.ultimo_update_exp > 100: 
+            self.frame_explosao += 1
+            self.ultimo_update_exp = agora
+        
+        if self.frame_explosao >= len(self.lista_frames):
+            self.explodindo = False
+            return None #tela de derrota
+            
+        return self.mudar_tela()
+
+    def mudar_tela(self):
+        return None
