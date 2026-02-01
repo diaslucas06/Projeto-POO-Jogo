@@ -3,8 +3,6 @@ import os
 import sys
 from ui.sounds import Musica
 from player import Player
-from main import Game
-from cenarios import CorredorA36, Campo
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
@@ -64,17 +62,16 @@ class Menu:
         self.running = True
 
     def start_game(self):
-            import characters.dialogue as dlg
-            import cenarios as cen
-            
-            dlg.dialogo_maira_acabou = False
-            dlg.dialogo_aluno_acabou = False
-            cen.fios_cortados = False
-            
-            
-            print("Iniciando o jogo...") 
-            self.running = False
-            História().run()
+        import characters.dialogue as dlg
+        import cenarios as cen
+        
+        dlg.dialogo_maira_acabou = False
+        dlg.dialogo_aluno_acabou = False
+        cen.fios_cortados = False
+        
+        
+        print("Iniciando o jogo...") 
+        self.running = False
 
     def show_options(self):
         print("Abrindo opções...")  
@@ -189,7 +186,10 @@ class História:
                     
                 i += 1
                 pausa = True
-                pausa_tempo = 1500 
+                if self.acelerado:
+                    pausa_tempo = 500 
+                else:
+                    pausa_tempo = 1500 
                 inicio_pausa = pygame.time.get_ticks()
                 
                 while pausa:
@@ -205,20 +205,16 @@ class História:
                 self.acelerado = False
 
             self.text_view = True
-            self.running = False
-            self.game_loop()    
+            if self.text_view:
+                self.game_loop()  
+                self.running = False  
+                return
             
     def game_loop(self):
         
-        clock = pygame.time.Clock()
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if self.running == False:
-                    musica.parar()
-                    Game(cenario=Campo()).run()
-            
-            clock.tick(FPS)
-        pygame.quit()
+        from main import Game
+        from cenarios import CorredorA36
+        musica.parar()
+        
+        novo_jogo = Game(cenario=CorredorA36())
+        novo_jogo.run()

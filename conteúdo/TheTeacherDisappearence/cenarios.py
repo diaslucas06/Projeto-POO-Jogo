@@ -35,23 +35,23 @@ seta7 = Seta(LARGURA//2, 450, "CorredorNapne")
 pegar_item_som = Som("smw_stomp.mp3")
 abrir_porta_som = Som("porta_abrindo.mp3")
 usar_tesoura = Som("som_tesoura.mp3")
+policia = Som("police-siren.mp3")
 
 #itens
-chave = Key1(164, 330)
-chave_m5 = Key2(300, 520)
-chave_coapac = Key3(300, 520)
-chave_m1 = Key4(680, 330)
-chave_a38 = Key2(0, 0) # Posição 0,0 porque ela começa com o Hugo
-chave_a38.nome_item = "Chave da Sala A38"
-cartao_acesso = CartaoAcesso(500, 540)
-fita = Fita(500, 530)
-fita2 = Fita2(780, 320)
-fita3 = Fita(350, 530)
-carrinho = Carrinho(50, 330)
-pe_de_cabra = PéDeCabra(510, 490)
-provas_hugo = Provas(LARGURA//2 - 140, ALTURA//2 - 130)
-cartaz = Cartaz(LARGURA//2 - 140, ALTURA//2)
-tesoura = Tesoura(620, 390)
+chave = None
+chave_m5 = None
+chave_coapac = None
+chave_m1 = None
+chave_a38 = None # Posição 0,0 porque ela começa com o Hugo
+cartao_acesso = None
+fita = None
+fita2 = None
+fita3 = None
+carrinho = None
+pe_de_cabra = None
+provas_hugo = None
+cartaz = None
+tesoura = None
 
 lista_itens = []
 
@@ -59,36 +59,92 @@ lista_itens = []
 WHITE = (255, 255, 255)
 
 #personagens
-hugo = Hugo()
-zelador = Zelador()
-coordenador = Coordenador()
-maira = Maíra()
-aluno = Aluno()
+hugo = None
+zelador = None
+coordenador = None
+maira = None
+aluno = None
 
 # estados: "inicio", "buscando_provas", "finalizado"
-estado_missao_hugo = "inicio"
+estado_missao_hugo = None
 
 sair_sala = False
 
 #alarme
-alarme_ativo = False
-tempo_inicio_alarme = 0
-duracao_alarme = 10000 
+alarme_ativo = None
+tempo_inicio_alarme = None
+duracao_alarme = None 
 som_alarme = None
 
 #alarme final
-alarme_ativo_final = False
-tempo_inicio_alarme_final = 0
-duracao_alarme_final = 10000 
+alarme_ativo_final = None
+tempo_inicio_alarme_final = None
+duracao_alarme_final = None 
 som_alarme_final = None
-alarme_final_disparado = False
-explodindo = False
+alarme_final_disparado = None
+explodindo = None
 
-fios_cortados = False
-dialogo_aluno_acabou = False
-dialogo_maira_acabou = False
+fios_cortados = None
+dialogo_aluno_acabou = None
+dialogo_maira_acabou = None
 
 retornar_menu = False
+
+def definir():
+    global chave, chave_m5, chave_coapac, chave_m1, chave_a38, cartao_acesso, fita, fita2, fita3, carrinho, pe_de_cabra, provas_hugo, cartaz, tesoura
+    chave = Key1(164, 330)
+    chave_m5 = Key2(300, 520)
+    chave_coapac = Key3(300, 520)
+    chave_m1 = Key4(680, 330)
+    chave_a38 = Key2(0, 0) # Posição 0,0 porque ela começa com o Hugo
+    chave_a38.nome_item = "Chave da Sala A38"
+    cartao_acesso = CartaoAcesso(500, 540)
+    fita = Fita(500, 530)
+    fita2 = Fita2(780, 320)
+    fita3 = Fita(350, 530)
+    carrinho = Carrinho(50, 330)
+    pe_de_cabra = PéDeCabra(510, 490)
+    provas_hugo = Provas(LARGURA//2 - 140, ALTURA//2 - 130)
+    cartaz = Cartaz(LARGURA//2 - 140, ALTURA//2)
+    tesoura = Tesoura(620, 390)
+    
+    global hugo, zelador, coordenador, maira, aluno
+    #personagens
+    hugo = Hugo()
+    zelador = Zelador()
+    coordenador = Coordenador()
+    maira = Maíra()
+    aluno = Aluno()
+    
+    global lista_itens
+    lista_itens.clear()
+    
+    # estados: "inicio", "buscando_provas", "finalizado"
+    global estado_missao_hugo
+    estado_missao_hugo = "inicio"
+
+    global fios_cortados, dialogo_aluno_acabou, dialogo_maira_acabou
+    fios_cortados = False
+    dialogo_aluno_acabou = False
+    dialogo_maira_acabou = False
+    
+    global sair_sala
+    sair_sala = False
+
+    global alarme_ativo, tempo_inicio_alarme, duracao_alarme, som_alarme, alarme_ativo_final, tempo_inicio_alarme_final, duracao_alarme_final, som_alarme_final, alarme_final_disparado, explodindo
+    #alarme
+    alarme_ativo = False
+    tempo_inicio_alarme = 0
+    duracao_alarme = 10000 
+    som_alarme = Som("alarm.ogg")
+
+    #alarme final
+    alarme_ativo_final = False
+    tempo_inicio_alarme_final = 0
+    duracao_alarme_final = 10000 
+    som_alarme_final = Som("alarm.ogg")
+    alarme_final_disparado = False
+    explodindo = False
 
 class Button():
     def __init__(self, image_path, hover_path, pos, callback):
@@ -645,6 +701,13 @@ class CorredorCOAPAC4(Cenario):
         if seta7 not in self.setas:
             self.setas.add(seta7)
             
+        #if cartao_acesso not in self.items:
+        #    self.items.add(cartao_acesso)
+            
+        if player.voltando_seta:
+            player.rect.left = 495
+            player.voltando_seta = False
+            
     def mudar_tela(self):
         if self.entrar_sala:
             self.entrar_sala = False
@@ -674,14 +737,18 @@ class CorredorNapne(Cenario):
             player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
             
         if player.saindo_porta:
+            player.ultima_direcao = "esquerda"
+            player.animacao_atual = player.andar_esquerda
+            player.image = player.andar_esquerda[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
             player.saindo_porta = False
-            
 
     def mudar_tela(self):
         if self.entrar_sala:
-            self.entrar_sala = False
+            self.entrar_sala = True
             return Exterior()
         elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            player.voltando_seta = True
             return CorredorCOAPAC4()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return None        
@@ -880,6 +947,7 @@ class Diretoria(Cenario):
         player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
         
     def desenhar(self):
+        super().desenhar()
         self.player_andar.draw(self.tela)
         
         if player.saindo_item:
@@ -1462,16 +1530,25 @@ class Exterior(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "corredores", "exterior.png")
-        player.ultima_direcao = "esquerda"
-        player.animacao_atual = player.andar_esquerda
-        player.image = player.andar_esquerda[int(player.atual)]
-        player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
-
+        
+        if player.saindo_porta:
+            player.ultima_direcao = "direita"
+            player.animacao_atual = player.andar_direita
+            player.image = player.andar_direita[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+            player.saindo_porta = False
+        else:
+            player.ultima_direcao = "esquerda"
+            player.animacao_atual = player.andar_esquerda
+            player.image = player.andar_esquerda[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
 
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+            player.saindo_porta = True
             return Arquibancadas()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
+            player.saindo_porta = True
             return CorredorNapne()
 
 class Arquibancadas(Cenario):
@@ -1480,11 +1557,19 @@ class Arquibancadas(Cenario):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "Arquibancada.png")
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-
+        
+        if player.saindo_porta:
+            player.ultima_direcao = "esquerda"
+            player.animacao_atual = player.andar_esquerda
+            player.image = player.andar_esquerda[int(player.atual)]
+            player.image = pygame.transform.scale(player.image, (PLAYER_LARGURA, PLAYER_ALTURA))
+            player.saindo_porta = False
+            
     def mudar_tela(self):
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return Arquibancadas2()
         elif player.ultima_direcao == "direita" and player.rect.x >= LARGURA - PLAYER_LARGURA - 300:
+            player.saindo_porta = True
             return Exterior()
         
 class Arquibancadas2(Cenario):
@@ -1524,11 +1609,11 @@ class Campo(Cenario):
         self.porta = pygame.Rect(950,200,20,340)
         
         #apenas para testes
-        if tesoura not in self.items:
-            self.items.add(tesoura)
+        #if tesoura not in self.items:
+        #    self.items.add(tesoura)
             
-        if pe_de_cabra not in self.items:
-            self.items.add(pe_de_cabra)
+        #if pe_de_cabra not in self.items:
+        #    self.items.add(pe_de_cabra)
             
         if seta2.clicado:
             seta2.clicado = False
@@ -1665,6 +1750,8 @@ class Prisão(Cenario):
         self.image = pygame.transform.scale(self.image, info_tela)
         self.clicou_no_frame_anterior = False
         
+        policia.play()
+        
         mid_x = LARGURA // 2
         mid_y = ALTURA // 2 + 250
         
@@ -1679,10 +1766,7 @@ class Prisão(Cenario):
         self.foi_clicado_sair = False
 
     def clicou_jogar(self):
-        from menu import Menu 
-        print("Voltando para o Menu...") 
-        novo_menu = Menu(self.tela)
-        novo_menu.run() 
+        self.foi_clicado = True
     
     def clicou_sair(self):
         print("Saindo do jogo...")

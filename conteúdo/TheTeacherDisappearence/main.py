@@ -47,8 +47,14 @@ class Game():
             
 if __name__ == "__main__":
     from menu import Menu, História, LARGURA_TELA, ALTURA_TELA
+    import cenarios
+    import main
     screen = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     while True:
-        history = História()
+        print("reiniciando")
+        cenarios.definir()
+        main.player.rect.topleft = 300, 295
         menu_principal = Menu(screen)
         menu_principal.run()
+        history = História()
+        history.run()
