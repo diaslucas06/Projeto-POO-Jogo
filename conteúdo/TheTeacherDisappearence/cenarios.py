@@ -585,7 +585,10 @@ class CorredorA30(Cenario):
             self.trancada = False
         
     def mudar_tela(self):
-        if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
+        if self.entrar_sala:
+            self.entrar_sala = False
+            return Grêmio()
+        elif player.ultima_direcao == "esquerda" and player.rect.left <= 0:
             return CorredorA36()
         elif player.ultima_direcao == "direita" and player.rect.right >= LARGURA:
             return CorredorA26()
@@ -1901,7 +1904,7 @@ class IfExplodindo(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "ifrn_explosion.png")
-        self.caminho_final = os.path.join(os.path.dirname(__file__), "data", "images", "Prisão.png")  #usando a imagem da prisão enquanto não tem a outra arte
+        self.caminho_final = os.path.join(os.path.dirname(__file__), "data", "images", "Perdeu.png")  
         
         info_tela = pygame.display.get_surface().get_size()
         self.image = pygame.image.load(self.caminho).convert()
