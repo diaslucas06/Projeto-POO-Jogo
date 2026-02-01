@@ -5,7 +5,7 @@ from characters.base import Hugo, Zelador, Coordenador, Zelador, Maíra, Aluno
 from ui.sounds import Som, Musica
 import os
 from main import player
-from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador, Dialogo_Maíra, dialogo_maira_acabou
+from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador, Dialogo_Maíra, Dialogo_Aluno
 
 #player
 PLAYER_LARGURA = 170
@@ -87,20 +87,29 @@ fios_cortados = False
 dialogo_aluno_acabou = False
 dialogo_maira_acabou = False
 
+retornar_menu = False
+
 class Button():
-    def __init__(self, text, pos, callback):
-        self.text = text
+    def __init__(self, image_path, hover_path, pos, callback):
         self.pos = pos
         self.callback = callback
-        self.font = pygame.font.SysFont("Arial", 30)
-        self.image = self.font.render(self.text, True, (255, 255, 255))
-        self.rect = self.image.get_rect(center=self.pos)
+        
+        self.image_normal = pygame.image.load(image_path).convert_alpha()
+        self.image_hover = pygame.image.load(hover_path).convert_alpha()
+        
+        self.image_normal = pygame.transform.scale(self.image_normal, (300, 100))
+        self.image_hover = pygame.transform.scale(self.image_hover, (300, 100))
+            
+        self.rect = self.image_normal.get_rect(center=self.pos)
 
     def draw(self, screen, mouse_pos):
-        # Muda a cor se o mouse estiver em cima
-        color = (200, 200, 200) if self.rect.collidepoint(mouse_pos) else (255, 255, 255)
-        self.image = self.font.render(self.text, True, color)
-        screen.blit(self.image, self.rect)
+        # Seleciona qual imagem desenhar com base na colisão do mouse
+        if self.rect.collidepoint(mouse_pos):
+            self.image_atual = self.image_hover
+        else:
+            self.image_atual = self.image_normal
+            
+        screen.blit(self.image_atual, self.rect)
 
     def check_click(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
@@ -387,7 +396,11 @@ class Cenario():
             elif character == maira and player.rect.colliderect(alcance_interacao) and maira.liberta:
                 if self.teclas[pygame.K_i]:
                     self.fundo_salvo = self.tela.copy()
-                    self.dialogo2.run()
+                    global dialogo_maira_acabou
+                    if not dialogo_maira_acabou:
+                        self.dialogo2.run()
+                        self.dialogo_acabou = True
+                        dialogo_maira_acabou = True
                     return None
                 self.tela.blit(hud.interagir, (60,20))
                 self.tela.blit(hud.tecla_i, (20, 20))
@@ -427,7 +440,6 @@ class Cenario():
                 self.tela.blit(txt_timer, (LARGURA // 2 - largura_texto // 2, 50))
             else:
                 alarme_ativo_final = False
-                print("Salvou")
                 if som_alarme_final:
                     som_alarme_final.parar()
                     musica = Musica("Iron wasteland.mp3")
@@ -1561,7 +1573,7 @@ class Subterraneo(Cenario):
         if not dialogo_aluno_acabou:
             if aluno not in self.characters:
                 self.characters.add(aluno)
-            self.dialogo = Dialogo_Coordenador(cenario=self)
+            self.dialogo = Dialogo_Aluno(cenario=self)
             
         
         global dialogo_maira_acabou
@@ -1630,8 +1642,7 @@ class Subterraneo(Cenario):
     def mudar_tela(self):
         global dialogo_maira_acabou
         
-        if dialogo_maira_acabou:
-            dialogo_maira_acabou = False  
+        if dialogo_maira_acabou: 
             return Prisão()
             
         if player.ultima_direcao == "esquerda" and player.rect.left <= 0:
@@ -1644,39 +1655,60 @@ class Subterraneo(Cenario):
 class Prisão(Cenario):
     def __init__(self):
         super().__init__()
-        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "salas", "Prisao.png") 
-        
+        self.caminho = os.path.join(os.path.dirname(__file__), "data", "images",  "Prisão.png") 
         self.tempo_inicial = pygame.time.get_ticks()
         self.exibir_botao = False
         self.delay_botao = 4000 
+        info_tela = pygame.display.get_surface().get_size()
+        self.image = pygame.image.load(self.caminho).convert()
+        self.image = pygame.transform.scale(self.image, info_tela)
         
-        mid_x = 1280 // 2
-        mid_y = 720 // 2 + 150
+        mid_x = LARGURA // 2
+        mid_y = ALTURA // 2 + 250
         
-        self.btn_jogar = Button("Jogar Novamente", (mid_x, mid_y), self.clicou)
-        self.foi_clicado = False
+        img_btn1 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_retry.png")
+        img_hover1 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_retry_hover.png")
+        img_btn2 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_exit.png")
+        img_hover2 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_exit_hover.png")
 
-    def clicou(self):
+        self.btn_jogar = Button(img_btn1, img_hover1, (mid_x - 200, mid_y), self.clicou_jogar)
+        self.btn_sair = Button(img_btn2, img_hover2, (mid_x + 200, mid_y), self.clicou_sair)
+        self.foi_clicado = False
+        self.foi_clicado_sair = False
+
+    def clicou_jogar(self):
         self.foi_clicado = True
+        
+    def clicou_sair(self):
+        self.foi_clicado_sair = True
 
     def desenhar(self):
-        super().desenhar() 
         
+        self.tela.blit(self.image, (0, 0))
         agora = pygame.time.get_ticks()
         mouse_pos = pygame.mouse.get_pos()
+        self.tela.blit(hud.font.render("Alguns dias depois, na prisão", True, (255, 255, 255)), (20, 20))
         
         if agora - self.tempo_inicial > self.delay_botao:
             self.exibir_botao = True
             
         if self.exibir_botao:
             self.btn_jogar.draw(self.tela, mouse_pos)
+            self.btn_sair.draw(self.tela, mouse_pos)
             
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.btn_jogar.check_click(mouse_pos)
+                    self.btn_sair.check_click(mouse_pos)
             
-            if self.foi_clicado:
-                return "VOLTAR_MENU"
+            
+        # consertar ambos
+        if self.foi_clicado:
+            return "VOLTAR_MENU"
+        
+        if self.foi_clicado_sair:
+            pygame.quit()
+            quit()
 
     def mudar_tela(self):
         return None

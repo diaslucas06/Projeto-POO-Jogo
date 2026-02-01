@@ -83,9 +83,6 @@
 import pygame
 import os
 
-dialogo_maira_acabou = False
-dialogo_aluno_acabou = False
-
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
 FPS = 60
@@ -223,27 +220,34 @@ class Dialogo_Coordenador(Dialogo):
     def __init__(self, cenario):
         super().__init__(cenario)
         self.dialog_text = [
-            ["Coordenador", "Achou mesmo que uma aluna qualquer iria", "estragar anos de planejamento?"],
-            ["Aluna", "Eu sei de tudo! Você sequestrou a Maíra porque", "ela descobriu a verdade, não foi?"],
-            ["Coordenador", "Verdade? A verdade é que este lugar me deve!", "Eu era como você... um aluno de Informática."],
-            ["Coordenador", "Mas eles me reprovaram. Me humilharam!", "Disseram que eu não tinha o que era preciso."],
-            ["Coordenador", "Voltei como funcionário para apagar o meu", "fracasso. Eu só precisava alterar o sistema..."],
-            ["Coordenador", "Falsificar aquele maldito certificado de", "conclusão era o meu direito!"],
-            ["Aluna", "E a Maíra viu você fazendo isso...", "Por isso você a trancou no subterrâneo!"],
-            ["Coordenador", "Ela não quis entender o meu lado. Agora,", "nenhum de vocês vai entender mais nada!", "O IF vai pagar pelo que me fez passar!"]
+            ["Coordenador", "O que você está fazendo aqui? Alunos não", "estão permitidos de entrar nesse campus", "à noite! Vá para casa!"],
+        ]
+        
+class Dialogo_Aluno(Dialogo):
+    def __init__(self, cenario):
+        super().__init__(cenario)
+        self.dialog_text = [
+            ["Zelador", "Achou mesmo que uma aluna qualquer iria estragar", "anos de planejamento?"],
+            ["Aluna", "O que você quer dizer com isso? Quem é você? Por que", "sequestrou Maíra?"],
+            ["Zelador", "Ah! Então você ainda não sabe quem sou eu? Por que", "você não conta para ela, querida professora?"],
+            ["Maíra Faria", "Ele foi aluno do campus há alguns anos, eu fui", "responsável pela expulsão dele por fraudar notas", "no sistema do SUAP."],
+            ["Aluna", "Mas para que sequestrá-la? Por que não disse a", "verdade a alguém? Você poderia ter conseguido", "uma forma melhor de lidar com isso."],
+            ["Zelador", "Verdade? A verdade é que este lugar me deve! Eu era", "como você... um aluno de Informática."],
+            ["Zelador", "Mas eles me expulsaram. Me humilharam!", "Tudo por culpa de Maíra, por isso a sequestrei.", "Ela merece isso!"],
+            ["Zelador", "Voltei como funcionário para apagar o meu", "fracasso. Eu só precisava alterar o sistema..."],
+            ["Zelador", "Falsificar aquelas malditas notas era meu direito!", "As matérias estavam me matando!"],
+            ["Aluna", "Mas e agora que eu descobri a verdade? Não tem", "como você se safar dessa!"],
+            ["Zelador", "Ela não quis entender o meu lado. Agora, nenhum de", "vocês vai entender mais nada! O IFRN vai pagar", "pelo que me fez passar!"],
+            ["Zelador", "Façam bom uso dos seus últimos 10 segundos."]
         ]
         
 class Dialogo_Maíra(Dialogo):
     def __init__(self, cenario):
         super().__init__(cenario)
         self.dialog_text = [
-            ["Maíra", "Meu Deus, eu achei que ninguem me encontraria", "aqui embaixo... Mas que bom que voce veio me salvar!"],
-            ["Maíra", "Você foi muito corajoso. E digno! Não salvou só a mim,", "mas ao IF também."],
-            ["Maíra", "Agora vamos sair daqui logo, a policia ja deve estar", "chegando!"],
+            ["Maíra Faria", "Meu Deus, eu achei que ninguem me encontraria", "aqui embaixo... Mas que bom que voce veio me salvar!"],
+            ["Maíra Faria", "Você foi muito corajosa. E digna! Não salvou só a mim,", "mas a todo o IF também. Se não fosse por você", "esse lugar seria pó agora."],
+            ["Aluna", "Não posso dizer que não tive ajuda, Hugo me", "ajudou, mesmo sabendo dos riscos de ser capturado."],
+            ["Maíra Faria", "Vou ficar devendo corrigir umas 1000 provas", "de alunos dele!"],
+            ["Maíra Faria", "Mas agora vamos sair daqui logo e chamar a polícia,", "ele não deve ter ido longe!"],
         ]
-
-    def run(self):
-        super().run() # Isso roda o diálogo todo
-        # Depois que o diálogo termina:
-        global dialogo_maira_acabou
-        dialogo_maira_acabou = True

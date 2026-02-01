@@ -5,7 +5,6 @@ from ui.sounds import Musica
 from player import Player
 from main import Game
 from cenarios import CorredorA36, Campo
-from characters.dialogue import dialogo_maira_acabou
 
 LARGURA_TELA = 1280
 ALTURA_TELA = 720 
@@ -223,10 +222,3 @@ class História:
             
             clock.tick(FPS)
         pygame.quit()
-
-
-if __name__ == "__main__":
-    while True:
-        history = História()
-        menu = Menu(history.screen)
-        menu.run()

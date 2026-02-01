@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from player import Player
 from ui.sounds import Musica
+import sys
 
 pygame.init()
 
@@ -22,8 +23,8 @@ class Game():
         pygame.mixer.music.set_volume(0.05)
 
     def run(self):
-    
-        while True:
+        self.running = True
+        while self.running:
             self.relogio.tick(FPS)
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -33,9 +34,21 @@ class Game():
             pygame.event.pump()
             
             if novo_cenario:
-                self.cenario = novo_cenario
-                if player.ultima_direcao == "esquerda":   
-                    player.rect.topleft = (1100, 295)
-                elif player.ultima_direcao == "direita":
-                    player.rect.topleft = (0, 295)
+                if novo_cenario == "VOLTAR_MENU":
+                    self.running = False
+                else:
+                    self.cenario = novo_cenario
+                    if player.ultima_direcao == "esquerda":   
+                        player.rect.topleft = (1100, 295)
+                    elif player.ultima_direcao == "direita":
+                        player.rect.topleft = (0, 295)
+                        
             pygame.display.flip()
+            
+if __name__ == "__main__":
+    from menu import Menu, História, LARGURA_TELA, ALTURA_TELA
+    screen = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+    while True:
+        history = História()
+        menu_principal = Menu(screen)
+        menu_principal.run()
