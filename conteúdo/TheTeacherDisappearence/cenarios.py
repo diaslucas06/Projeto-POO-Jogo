@@ -6,6 +6,7 @@ from ui.sounds import Som, Musica
 import os
 from main import player
 from characters.dialogue import Dialogo_Zelador, Dialogo_Coordenador, Dialogo_Maíra, Dialogo_Aluno
+import sys
 
 #player
 PLAYER_LARGURA = 170
@@ -1662,6 +1663,7 @@ class Prisão(Cenario):
         info_tela = pygame.display.get_surface().get_size()
         self.image = pygame.image.load(self.caminho).convert()
         self.image = pygame.transform.scale(self.image, info_tela)
+        self.clicou_no_frame_anterior = False
         
         mid_x = LARGURA // 2
         mid_y = ALTURA // 2 + 250
@@ -1677,17 +1679,23 @@ class Prisão(Cenario):
         self.foi_clicado_sair = False
 
     def clicou_jogar(self):
-        self.foi_clicado = True
-        
+        from menu import Menu 
+        print("Voltando para o Menu...") 
+        novo_menu = Menu(self.tela)
+        novo_menu.run() 
+    
     def clicou_sair(self):
-        self.foi_clicado_sair = True
+        print("Saindo do jogo...")
+        pygame.quit()
+        sys.exit()
 
     def desenhar(self):
-        
         self.tela.blit(self.image, (0, 0))
         agora = pygame.time.get_ticks()
         mouse_pos = pygame.mouse.get_pos()
-        self.tela.blit(hud.font.render("Alguns dias depois, na prisão", True, (255, 255, 255)), (20, 20))
+        
+        texto = hud.font.render("Alguns dias depois, na prisão...", True, (255, 255, 255))
+        self.tela.blit(texto, (20, 20))
         
         if agora - self.tempo_inicial > self.delay_botao:
             self.exibir_botao = True
@@ -1696,11 +1704,16 @@ class Prisão(Cenario):
             self.btn_jogar.draw(self.tela, mouse_pos)
             self.btn_sair.draw(self.tela, mouse_pos)
             
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    self.btn_jogar.check_click(mouse_pos)
-                    self.btn_sair.check_click(mouse_pos)
+            clique_atual, _, _ = pygame.mouse.get_pressed()
             
+            if clique_atual and not self.clicou_no_frame_anterior:
+                if self.btn_jogar.rect.collidepoint(mouse_pos):
+                    self.clicou_jogar()
+                elif self.btn_sair.rect.collidepoint(mouse_pos):
+                    self.clicou_sair()
+            
+            # Atualiza o estado para o próximo frame
+            self.clicou_no_frame_anterior = clique_atual           
             
         # consertar ambos
         if self.foi_clicado:
