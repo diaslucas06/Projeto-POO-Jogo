@@ -1817,45 +1817,94 @@ class IfExplodindo(Cenario):
     def __init__(self):
         super().__init__()
         self.caminho = os.path.join(os.path.dirname(__file__), "data", "images", "ifrn_explosion.png")
+        self.caminho_final = os.path.join(os.path.dirname(__file__), "data", "images", "Prisão.png")  #usando a imagem da prisão enquanto não tem a outra arte
+        
         info_tela = pygame.display.get_surface().get_size()
         self.image = pygame.image.load(self.caminho).convert()
         self.image = pygame.transform.scale(self.image, info_tela)
         
-        # Aumentar tamanho da explosão
+        self.img_fundo_final = pygame.image.load(self.caminho_final).convert()
+        self.img_fundo_final = pygame.transform.scale(self.img_fundo_final, info_tela)
+
+        self.explodindo = False
+        self.frame_explosao = 0
+        self.lista_frames = []
+        self.ultimo_update_exp = 0
+        self.animacao_finalizada = False
+        
         fator_escala = 2.5
         fator_escala2 = 3.5
         nova_largura = int(LARGURA * fator_escala)
         nova_altura = int(ALTURA * fator_escala2)
     
-        # Variáveis da Explosão
-        self.explodindo = False
-        self.frame_explosao = 0
-        self.lista_frames = []
-        self.ultimo_update_exp = 0
-        
         for i in range(1, 10):
             img = pygame.image.load(os.path.join(os.path.dirname(__file__), "data", "images", "explosão", f"Nuclear_explosion{i}.png"))
             self.lista_frames.append(pygame.transform.scale(img, (nova_largura, nova_altura)))
+
+        self.tempo_finalizacao = 0
+        self.exibir_botao = False
+        self.delay_botao = 4000 
+        self.clicou_no_frame_anterior = False
         
+        mid_x = LARGURA // 2
+        mid_y = ALTURA // 2 + 250
+        
+        img_btn1 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_retry.png")
+        img_hover1 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_retry_hover.png")
+        img_btn2 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_exit.png")
+        img_hover2 = os.path.join(os.path.dirname(__file__), "data", "images", "botões", "botão_exit_hover.png")
+
+        self.btn_jogar = Button(img_btn1, img_hover1, (mid_x - 200, mid_y), self.clicou_jogar)
+        self.btn_sair = Button(img_btn2, img_hover2, (mid_x + 200, mid_y), self.clicou_sair)
+
+    def clicou_jogar(self):
+        from menu import Menu 
+        novo_menu = Menu(self.tela)
+        novo_menu.run() 
+    
+    def clicou_sair(self):
+        pygame.quit()
+        sys.exit()
+
     def desenhar(self):
-        self.tela.blit(self.image, (0, 0)) 
         agora = pygame.time.get_ticks()
-        
-        img_atual = self.lista_frames[self.frame_explosao]
-        pos_x = (LARGURA // 2) - (img_atual.get_width() // 2)
-        pos_y = (ALTURA // 2) - (img_atual.get_height() // 2 - 50)
-        self.tela.blit(img_atual, (pos_x, pos_y))
-        
-        # Controle de tempo da animação
-        if agora - self.ultimo_update_exp > 100: 
-            self.frame_explosao += 1
-            self.ultimo_update_exp = agora
-        
-        if self.frame_explosao >= len(self.lista_frames):
-            self.explodindo = False
-            return None #tela de derrota
+        mouse_pos = pygame.mouse.get_pos()
+
+        if not self.animacao_finalizada:
+            self.tela.blit(self.image, (0, 0))
+            img_atual = self.lista_frames[self.frame_explosao]
+            pos_x = (LARGURA // 2) - (img_atual.get_width() // 2)
+            pos_y = (ALTURA // 2) - (img_atual.get_height() // 2 - 50)
+            self.tela.blit(img_atual, (pos_x, pos_y))
             
-        return self.mudar_tela()
+            if agora - self.ultimo_update_exp > 100: 
+                self.frame_explosao += 1
+                self.ultimo_update_exp = agora
+            
+            if self.frame_explosao >= len(self.lista_frames):
+                self.animacao_finalizada = True
+                self.tempo_finalizacao = agora
+        else:
+            self.tela.blit(self.img_fundo_final, (0, 0))
+            texto = hud.font.render("Alguns dias depois da explosão...", True, (255, 255, 255))
+            self.tela.blit(texto, (20, 20))
+            
+            if agora - self.tempo_finalizacao > self.delay_botao:
+                self.exibir_botao = True
+                
+            if self.exibir_botao:
+                self.btn_jogar.draw(self.tela, mouse_pos)
+                self.btn_sair.draw(self.tela, mouse_pos)
+                
+                clique_atual, _, _ = pygame.mouse.get_pressed()
+                
+                if clique_atual and not self.clicou_no_frame_anterior:
+                    if self.btn_jogar.rect.collidepoint(mouse_pos):
+                        self.clicou_jogar()
+                    elif self.btn_sair.rect.collidepoint(mouse_pos):
+                        self.clicou_sair()
+                
+                self.clicou_no_frame_anterior = clique_atual
 
     def mudar_tela(self):
         return None
