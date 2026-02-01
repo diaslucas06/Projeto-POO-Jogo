@@ -1940,11 +1940,10 @@ class IfExplodindo(Cenario):
 
         self.btn_jogar = Button(img_btn1, img_hover1, (mid_x - 200, mid_y), self.clicou_jogar)
         self.btn_sair = Button(img_btn2, img_hover2, (mid_x + 200, mid_y), self.clicou_sair)
+        self.foi_clicado = False
 
     def clicou_jogar(self):
-        from menu import Menu 
-        novo_menu = Menu(self.tela)
-        novo_menu.run() 
+        self.foi_clicado = True
     
     def clicou_sair(self):
         pygame.quit()
@@ -1989,6 +1988,9 @@ class IfExplodindo(Cenario):
                         self.clicou_sair()
                 
                 self.clicou_no_frame_anterior = clique_atual
+                
+        if self.foi_clicado:
+            return "VOLTAR_MENU"
 
     def mudar_tela(self):
         return None
