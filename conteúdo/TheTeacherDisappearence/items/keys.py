@@ -78,7 +78,7 @@ class CartaoAcesso(Item):
         self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "cartaoAcesso.png")
         super().__init__(x, y)
         self.image = pygame.transform.scale(self.image, (50, 30))
-        self.nome_item = "Cartão de Acesso"
+        self.nome_item = "Cartão de Acesso da Diretoria"
 
 class PéDeCabra(Item):
 
@@ -110,7 +110,7 @@ class Cartaz(Item):
         self.caminho = os.path.join(os.path.dirname(__file__),"..", "data", "images", "items", "comuns", "cartaz_simples.png")
         super().__init__(x, y)
         self.image = pygame.transform.scale(self.image, (220, 290))
-        self.nome_item = "Panfleto de Corrida"
+        self.nome_item = "Panfleto de Corrida, sua velocidade foi aumentada!"
         
 class Carrinho(pygame.sprite.Sprite):
     

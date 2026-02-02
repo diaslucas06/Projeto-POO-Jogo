@@ -238,7 +238,7 @@ class Dialogo_Aluno(Dialogo):
             ["Zelador", "Falsificar aquelas malditas notas era meu direito!", "As matérias estavam me matando!"],
             ["Aluna", "Mas e agora que eu descobri a verdade? Não tem", "como você se safar dessa!"],
             ["Zelador", "Ela não quis entender o meu lado. Agora, nenhum de", "vocês vai entender mais nada! O IFRN vai pagar", "pelo que me fez passar!"],
-            ["Zelador", "Façam bom uso dos seus últimos 10 segundos."]
+            ["Zelador", "Façam bom uso dos seus últimos segundos. Nenhuma", "aluna ou professora amarrada vai conseguir parar a", "bomba que plantei nessa sala a tempo. Boa sorte!"]
         ]
         
 class Dialogo_Maíra(Dialogo):

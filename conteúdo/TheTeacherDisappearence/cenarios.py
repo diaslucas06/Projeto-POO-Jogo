@@ -135,13 +135,13 @@ def definir():
     #alarme
     alarme_ativo = False
     tempo_inicio_alarme = 0
-    duracao_alarme = 10000 
+    duracao_alarme = 15000 
     som_alarme = Som("alarm.ogg")
 
     #alarme final
     alarme_ativo_final = False
     tempo_inicio_alarme_final = 0
-    duracao_alarme_final = 10000 
+    duracao_alarme_final = 14000 
     som_alarme_final = Som("alarm.ogg")
     alarme_final_disparado = False
     explodindo = False
@@ -254,13 +254,13 @@ class Cenario():
        
         #colisão com a porta para entrar em salas/laboratórios
         if player.rect.colliderect(self.porta):
-            if self.item_necessario in lista_itens and self.trancada:
+            if self.item_necessario in lista_itens and self.trancada and "CorredorA28.png" not in self.caminho:
                 self.tela.blit(hud.destrancar_porta, (60, 20))
                 self.tela.blit(hud.tecla_e, (20, 20))
-            elif self.trancada:
+            elif self.trancada and "CorredorA28.png" not in self.caminho:
                 self.tela.blit(hud.cadeado, (20, 20))
                 self.tela.blit(hud.porta_trancada, (60, 20))
-            else:
+            elif not self.trancada and  "CorredorA28.png" not in self.caminho:
                 self.tela.blit(hud.entrar, (60, 20))
                 self.tela.blit(hud.tecla_e, (20, 20))
             if self.teclas[pygame.K_e]:
@@ -396,7 +396,7 @@ class Cenario():
             
             if character == hugo:
                 self.tela.blit(character.image, (120, 245))
-                alcance_interacao = character.rect.inflate(200, 200)
+                alcance_interacao = character.rect.inflate(300, 300)
                 
             elif character == zelador:
                 self.tela.blit(character.image, character.rect) 
@@ -1505,6 +1505,8 @@ class PainelSemFios(Cenario):
         self.tela.blit(hud.font.render("Interior do painel", True, (255, 255, 255)), (20, 20))
         self.tela.blit(hud.tecla_esc, (20, 60))
         self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
+        self.tela.blit(hud.tecla_e, (20, 60))
+        self.tela.blit(hud.font.render("Pressione 'E' para cortar os fios", True, (255, 255, 255)), (60, 60))
         
         for i, item_inv in enumerate(lista_itens):
             nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
@@ -1972,7 +1974,7 @@ class IfExplodindo(Cenario):
                 self.tempo_finalizacao = agora
         else:
             self.tela.blit(self.img_fundo_final, (0, 0))
-            texto = hud.font.render("Alguns dias depois da explosão...", True, (255, 255, 255))
+            texto = hud.font.render("Alguns dias depois da explosão, na casa do aluno...", True, (255, 255, 255))
             self.tela.blit(texto, (20, 20))
             
             if agora - self.tempo_finalizacao > self.delay_botao:
