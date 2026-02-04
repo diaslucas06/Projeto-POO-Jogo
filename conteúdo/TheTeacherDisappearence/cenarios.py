@@ -364,8 +364,6 @@ class Cenario():
             seta.clicado = False
             self.tela.blit(seta.image, seta.rect)
             if player.rect.colliderect(seta.rect):
-                self.tela.blit(hud.clicar, (60, 20))
-                
                 if seta.destino == "Campo":
                     self.tela.blit(hud.clicar_campo, (60, 20))
                 else:

@@ -32,6 +32,7 @@ class Hud():
         self.interagir = self.font.render("Pressione 'I' para interagir com o personagem", True, WHITE)
         self.pegar = self.font.render("Pressione 'P' para pegar o item", True, WHITE)
         self.clicar = self.font.render("Pressione 'S' para mudar para o outro lado do corredor", True, WHITE)
+        self.clicar_campo = self.font.render("Pressione 'S' para entrar no campo e sair das arquibancadas", True, WHITE)
         self.abrir_bolsa = self.font.render("Pressione 'E' para abrir a bolsa", True, WHITE)
         self.acessar_computador = self.font.render("Pressione 'E' para acessar o computador", True, WHITE)
         self.acessar_painel = self.font.render("Pressione 'E' para acessar o painel", True, WHITE)
