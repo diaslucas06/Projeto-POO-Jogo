@@ -365,6 +365,11 @@ class Cenario():
             self.tela.blit(seta.image, seta.rect)
             if player.rect.colliderect(seta.rect):
                 self.tela.blit(hud.clicar, (60, 20))
+                
+                if seta.destino == "Campo":
+                    self.tela.blit(hud.clicar_campo, (60, 20))
+                else:
+                    self.tela.blit(hud.clicar, (60, 20))
                 self.tela.blit(hud.tecla_s, (20, 20))
                 if self.teclas[pygame.K_s]:
                     seta.clicado = True
@@ -1505,9 +1510,7 @@ class PainelSemFios(Cenario):
         self.tela.blit(hud.font.render("Interior do painel", True, (255, 255, 255)), (20, 20))
         self.tela.blit(hud.tecla_esc, (20, 60))
         self.tela.blit(hud.font.render("Pressione 'Esc' para sair", True, (255, 255, 255)), (70, 60))
-        self.tela.blit(hud.tecla_e, (20, 60))
-        self.tela.blit(hud.font.render("Pressione 'E' para cortar os fios", True, (255, 255, 255)), (60, 60))
-        
+
         for i, item_inv in enumerate(lista_itens):
             nova_pos_x = inventario.posicao_base_x + (i * inventario.espacamento_entre_itens)
             self.tela.blit(item_inv.image, (nova_pos_x, inventario.posicao_y))

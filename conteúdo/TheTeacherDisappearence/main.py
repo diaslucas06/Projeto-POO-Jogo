@@ -54,6 +54,7 @@ if __name__ == "__main__":
         print("reiniciando")
         cenarios.definir()
         main.player.rect.topleft = 300, 295
+        main.player.velocidade = 11
         menu_principal = Menu(screen)
         menu_principal.run()
         history = História()
