@@ -7,7 +7,7 @@ class Musica():
         self.caminho = os.path.join(os.path.dirname(__file__), "..", "data", "sounds", arquivo)
         
     def play(self):
-        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.set_volume(2)
         pygame.mixer.music.load(self.caminho)
         pygame.mixer.music.play(-1)
         

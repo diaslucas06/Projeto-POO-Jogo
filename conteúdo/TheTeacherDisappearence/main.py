@@ -20,7 +20,6 @@ class Game():
         self.cenario = cenario
         musica = Musica("Robert Blumenau - Suspense.mp3")
         musica.play()
-        pygame.mixer.music.set_volume(0.05)
 
     def run(self):
         self.running = True
